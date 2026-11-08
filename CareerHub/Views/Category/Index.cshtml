@@ -1,0 +1,116 @@
+﻿@model IEnumerable<CareerHub.Models.Danhmuc>
+
+@{
+    ViewData["Title"] = "Quản lý danh mục";
+}
+
+<div class="container-fluid py-4">
+
+    <h2 class="mb-4">Quản lý danh mục nghề nghiệp</h2>
+
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-primary text-white">
+            Danh sách danh mục
+        </div>
+
+        <div class="card-body">
+        <!-- Form tìm kiếm danh mục -->
+<form asp-controller="Category"
+      asp-action="Index"
+      method="get"
+      class="row g-3 mb-4">
+
+    <div class="col-md-8">
+        <input type="text"
+               name="tuKhoa"
+               value="@ViewBag.TuKhoa"
+               class="form-control"
+               placeholder="Tìm theo mã hoặc tên danh mục..." />
+    </div>
+
+    <div class="col-md-2">
+        <button type="submit"
+                class="btn btn-primary w-100">
+            Tìm kiếm
+        </button>
+    </div>
+
+    <div class="col-md-2">
+        <a asp-controller="Category"
+           asp-action="Index"
+           class="btn btn-secondary w-100">
+            Làm mới
+        </a>
+    </div>
+
+</form>
+
+            <p>
+                <a asp-action="Create" class="btn btn-success">
+                    + Thêm danh mục
+                </a>
+            </p>
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã danh mục</th>
+                            <th>Tên danh mục</th>
+                            <th>Mô tả</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var danhMuc in Model)
+                            {
+                                <tr>
+                                    <td>@danhMuc.MaDanhMuc</td>
+
+                                    <td>@danhMuc.TenDanhMuc</td>
+
+                                    <td>@danhMuc.MoTa</td>
+
+                                    <td>
+                                        <a asp-action="Edit"
+                                           asp-route-id="@danhMuc.MaDanhMuc"
+                                           class="btn btn-warning btn-sm">
+                                            Sửa
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@danhMuc.MaDanhMuc"
+                                           class="btn btn-danger btn-sm">
+                                            Xóa
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center">
+                                    Chưa có danh mục nào.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

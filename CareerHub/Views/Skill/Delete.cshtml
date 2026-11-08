@@ -1,0 +1,61 @@
+﻿@model CareerHub.Models.Kynang
+
+@{
+    ViewData["Title"] = "Xóa kỹ năng";
+}
+
+<div class="container py-4">
+
+    <h2 class="mb-4">Xóa kỹ năng</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <h5 class="text-danger">
+                Bạn có chắc chắn muốn xóa kỹ năng này?
+            </h5>
+
+            <hr />
+
+            <dl class="row">
+
+                <dt class="col-sm-3">
+                    Mã kỹ năng
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.MaKyNang
+                </dd>
+
+                <dt class="col-sm-3">
+                    Tên kỹ năng
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.TenKyNang
+                </dd>
+
+            </dl>
+
+            <form asp-action="Delete" method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="id"
+                       value="@Model.MaKyNang" />
+
+                <button type="submit" class="btn btn-danger">
+                    Xác nhận xóa
+                </button>
+
+                <a asp-action="Index" class="btn btn-secondary">
+                    Hủy
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>

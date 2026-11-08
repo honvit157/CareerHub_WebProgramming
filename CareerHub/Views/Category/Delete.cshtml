@@ -1,0 +1,71 @@
+﻿@model CareerHub.Models.Danhmuc
+
+@{
+    ViewData["Title"] = "Xóa danh mục";
+}
+
+<div class="container py-4">
+
+    <h2 class="mb-4">Xóa danh mục nghề nghiệp</h2>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <h5 class="text-danger">
+                Bạn có chắc chắn muốn xóa danh mục này?
+            </h5>
+
+            <hr />
+
+            <dl class="row">
+
+                <dt class="col-sm-3">
+                    Mã danh mục
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.MaDanhMuc
+                </dd>
+
+                <dt class="col-sm-3">
+                    Tên danh mục
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.TenDanhMuc
+                </dd>
+
+                <dt class="col-sm-3">
+                    Mô tả
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.MoTa
+                </dd>
+
+            </dl>
+
+            <form asp-action="Delete" method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="id"
+                       value="@Model.MaDanhMuc" />
+
+                <button type="submit" class="btn btn-danger">
+                    Xác nhận xóa
+                </button>
+
+                <a asp-action="Index" class="btn btn-secondary">
+                    Hủy
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
