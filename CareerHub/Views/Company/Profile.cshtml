@@ -1,0 +1,98 @@
+﻿@model CareerHub.ViewModels.CompanyProfileVm
+@{
+    ViewData["Title"] = "Thông tin công ty";
+}
+
+<div class="container-xxl py-5">
+    <div class="container">
+        <h1 class="text-center mb-5">Thông tin công ty</h1>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-warning">@TempData["Error"]</div>
+        }
+
+        <form asp-action="Profile" method="post" enctype="multipart/form-data" class="row g-4">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaCongTy" />
+
+            <div class="col-md-4 text-center">
+                @if (!string.IsNullOrEmpty(Model.Logo))
+                {
+                    <img id="logoPreview" src="@Model.Logo" alt="Logo công ty"
+                         class="img-fluid border rounded mb-3" style="width:180px;height:180px;object-fit:contain;" />
+                }
+                else
+                {
+                    <img id="logoPreview" src="~/Template/img/com-logo-1.jpg" alt="Chưa có logo"
+                         class="img-fluid border rounded mb-3" style="width:180px;height:180px;object-fit:contain;" />
+                }
+                <div class="mb-2">
+                    <label asp-for="LogoFile" class="form-label"></label>
+                    <input asp-for="LogoFile" type="file" class="form-control" accept=".png,.jpg,.jpeg" />
+                    <span asp-validation-for="LogoFile" class="text-danger"></span>
+                    <div class="form-text">Chỉ nhận .png, .jpg, .jpeg - tối đa 5MB.</div>
+                </div>
+                @if (Model.MaCongTy != 0)
+                {
+                    <span class="badge @(Model.DaXacMinh == true ? "bg-success" : "bg-secondary")">
+                        @(Model.DaXacMinh == true ? "Đã xác minh" : "Chưa xác minh")
+                    </span>
+                }
+            </div>
+
+            <div class="col-md-8">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label asp-for="TenCongTy" class="form-label"></label>
+                        <input asp-for="TenCongTy" class="form-control" />
+                        <span asp-validation-for="TenCongTy" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Website" class="form-label"></label>
+                        <input asp-for="Website" class="form-control" placeholder="https://congty.com" />
+                        <span asp-validation-for="Website" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="QuyMo" class="form-label"></label>
+                        <input asp-for="QuyMo" class="form-control" placeholder="vd: 100-500 nhân viên" />
+                        <span asp-validation-for="QuyMo" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="DiaChi" class="form-label"></label>
+                        <input asp-for="DiaChi" class="form-control" />
+                        <span asp-validation-for="DiaChi" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="MoTa" class="form-label"></label>
+                        <textarea asp-for="MoTa" rows="6" class="form-control"></textarea>
+                        <span asp-validation-for="MoTa" class="text-danger"></span>
+                    </div>
+                    <div class="col-12 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-5">Lưu thông tin</button>
+                        @if (Model.MaCongTy != 0)
+                        {
+                            <a asp-controller="EmployerJob" asp-action="Index" class="btn btn-light">Tin tuyển dụng của tôi</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Xem trước logo ngay khi chọn file
+    (function () {
+        var input = document.getElementById('LogoFile');
+        var img = document.getElementById('logoPreview');
+        if (!input || !img) return;
+        input.addEventListener('change', function () {
+            if (input.files && input.files[0]) img.src = URL.createObjectURL(input.files[0]);
+        });
+    })();
+</script>

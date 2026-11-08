@@ -1,0 +1,78 @@
+﻿@model IEnumerable<CareerHub.Models.Tintuyendung>
+@{
+    ViewData["Title"] = "Tin tuyển dụng của tôi";
+    string Badge(string? s) => s switch
+    {
+        "Đã duyệt" => "bg-success",
+        "Từ chối" => "bg-danger",
+        "Đã đóng" => "bg-dark",
+        _ => "bg-warning text-dark"
+    };
+}
+
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+            <h1 class="mb-0">Tin tuyển dụng của tôi</h1>
+            <div class="d-flex gap-2">
+                <a asp-controller="Company" asp-action="Profile" class="btn btn-light">Thông tin công ty</a>
+                <a asp-action="Create" class="btn btn-primary">+ Đăng tin mới</a>
+            </div>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tiêu đề</th>
+                        <th>Ngành nghề</th>
+                        <th>Hạn nộp</th>
+                        <th class="text-center">Ứng viên</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var job in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@job.TieuDe</td>
+                        <td>@job.MaDanhMucNavigation.TenDanhMuc</td>
+                        <td>@(job.HanNop?.ToString("dd/MM/yyyy") ?? "-")</td>
+                        <td class="text-center">
+                            <a asp-action="Applicants" asp-route-id="@job.MaTin" class="badge bg-primary text-decoration-none">
+                                @job.Ungtuyens.Count
+                            </a>
+                        </td>
+                        <td><span class="badge @Badge(job.TrangThai)">@job.TrangThai</span></td>
+                        <td class="text-end text-nowrap">
+                            <a asp-action="Applicants" asp-route-id="@job.MaTin" class="btn btn-sm btn-outline-primary">Ứng viên</a>
+                            <a asp-action="Edit" asp-route-id="@job.MaTin" class="btn btn-sm btn-outline-secondary">Sửa</a>
+                            @if (job.TrangThai != "Đã đóng")
+                            {
+                                <form asp-action="Close" asp-route-id="@job.MaTin" method="post" class="d-inline"
+                                      onsubmit="return confirm('Đóng tin này? Ứng viên sẽ không thể nộp thêm hồ sơ.');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Đóng tin</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="6" class="text-center text-muted py-4">Chưa có tin tuyển dụng nào.</td></tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

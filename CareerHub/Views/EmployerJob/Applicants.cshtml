@@ -1,0 +1,128 @@
+﻿@using CareerHub.ViewModels
+@model IEnumerable<CareerHub.Models.Ungtuyen>
+@{
+    var job = (CareerHub.Models.Tintuyendung)ViewBag.Job;
+    ViewData["Title"] = "Ứng viên - " + job.TieuDe;
+}
+
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+            <div>
+                <h1 class="mb-1">Ứng viên đã nộp hồ sơ</h1>
+                <p class="text-muted mb-0">Vị trí: <strong>@job.TieuDe</strong> - @Model.Count() hồ sơ</p>
+            </div>
+            <a asp-action="Index" class="btn btn-light">Quay lại danh sách tin</a>
+        </div>
+
+        <div id="statusAlert" class="alert alert-danger d-none"></div>
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        @* Token chống CSRF dùng cho các request AJAX bên dưới *@
+        <form id="csrfForm">@Html.AntiForgeryToken()</form>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ứng viên</th>
+                        <th>Liên hệ</th>
+                        <th>CV</th>
+                        <th>Thư giới thiệu</th>
+                        <th>Ngày nộp</th>
+                        <th>Trạng thái</th>
+                        <th style="min-width:170px">Đổi trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var a in Model)
+                {
+                    var status = a.TrangThai ?? ApplicationStatus.Submitted;
+                    <tr>
+                        <td class="fw-semibold">@a.MaUngVienNavigation.HoTen</td>
+                        <td>
+                            <div>@a.MaUngVienNavigation.Email</div>
+                            <small class="text-muted">@a.MaUngVienNavigation.DienThoai</small>
+                        </td>
+                        <td class="text-nowrap">
+                            <div class="small mb-1">@a.MaCvNavigation.TenCv</div>
+                            <a asp-action="ViewCv" asp-route-id="@a.MaUngTuyen" target="_blank" class="btn btn-sm btn-outline-primary">Xem</a>
+                            <a asp-action="DownloadCv" asp-route-id="@a.MaUngTuyen" class="btn btn-sm btn-outline-secondary">Tải PDF</a>
+                        </td>
+                        <td style="max-width:260px">
+                            <span class="d-inline-block text-truncate" style="max-width:260px" title="@a.ThuGioiThieu">@a.ThuGioiThieu</span>
+                        </td>
+                        <td>@(a.NgayNop?.ToString("dd/MM/yyyy HH:mm"))</td>
+                        <td><span id="badge-@a.MaUngTuyen" class="badge @ApplicationStatus.BadgeClass(status)">@status</span></td>
+                        <td>
+                            <select class="form-select form-select-sm status-select"
+                                    data-id="@a.MaUngTuyen" data-current="@status">
+                                @foreach (var s in ApplicationStatus.All)
+                                {
+                                    <option value="@s" selected="@(s == status)">@s</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="7" class="text-center text-muted py-4">Chưa có ứng viên nào nộp hồ sơ vào tin này.</td></tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // AJAX (TV2): đổi trạng thái hồ sơ ứng viên không tải lại trang
+    (function () {
+        var updateUrl = '@Url.Action("UpdateStatus", "EmployerJob")';
+        var tokenInput = document.querySelector('#csrfForm input[name="__RequestVerificationToken"]');
+        var alertBox = document.getElementById('statusAlert');
+        var allBadgeClasses = ['bg-secondary', 'bg-info', 'bg-warning', 'text-dark', 'bg-success', 'bg-danger'];
+
+        function showError(msg) {
+            alertBox.textContent = msg;
+            alertBox.classList.remove('d-none');
+            setTimeout(function () { alertBox.classList.add('d-none'); }, 4000);
+        }
+
+        document.querySelectorAll('.status-select').forEach(function (select) {
+            select.addEventListener('change', function () {
+                var id = select.dataset.id;
+                var previous = select.dataset.current;
+                var status = select.value;
+
+                var body = new FormData();
+                body.append('id', id);
+                body.append('status', status);
+                body.append('__RequestVerificationToken', tokenInput.value);
+
+                select.disabled = true;
+                fetch(updateUrl, { method: 'POST', body: body, credentials: 'same-origin' })
+                    .then(function (res) {
+                        return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+                    })
+                    .then(function (r) {
+                        if (!r.ok || !r.data.success) throw new Error(r.data.message || 'Cập nhật thất bại');
+
+                        var badge = document.getElementById('badge-' + id);
+                        allBadgeClasses.forEach(function (c) { badge.classList.remove(c); });
+                        r.data.badgeClass.split(' ').forEach(function (c) { badge.classList.add(c); });
+                        badge.textContent = r.data.status;
+                        select.dataset.current = r.data.status;
+                    })
+                    .catch(function (err) {
+                        select.value = previous; // hoàn lại lựa chọn cũ khi lỗi
+                        showError(err.message || 'Có lỗi xảy ra, vui lòng thử lại.');
+                    })
+                    .finally(function () { select.disabled = false; });
+            });
+        });
+    })();
+</script>
