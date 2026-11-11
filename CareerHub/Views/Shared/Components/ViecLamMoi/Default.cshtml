@@ -1,0 +1,43 @@
+﻿
+@model IEnumerable<CareerHub.Models.Tintuyendung>
+
+<div class="row g-4">
+    @foreach (var job in Model)
+    {
+        <div class="col-12">
+            <div class="job-item p-4">
+                <div class="row g-4 align-items-center">
+                    <div class="col-md-8">
+                        <h5 class="mb-2">@job.TieuDe</h5>
+
+                        <p class="mb-2">
+                            @(job.MaCongTyNavigation?.TenCongTy
+                                ?? "Company not specified")
+                        </p>
+
+                        <span class="me-3">
+                            <i class="fa fa-map-marker-alt text-primary"></i>
+                            @job.DiaChiLamViec
+                        </span>
+
+                        <span>
+                            <i class="far fa-clock text-primary"></i>
+                            @job.LoaiHinh
+                        </span>
+                    </div>
+                   @if (false)
+{
+                    @await Component.InvokeAsync("ViecLamMoi") }
+                    <div class="col-md-4 text-md-end">
+                        <a asp-controller="Jobs"
+                           asp-action="Details"
+                           asp-route-id="@job.MaTin"
+                           class="btn btn-primary">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

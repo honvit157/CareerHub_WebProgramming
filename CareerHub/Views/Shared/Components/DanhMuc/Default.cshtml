@@ -1,0 +1,23 @@
+﻿
+@model IEnumerable<CareerHub.Models.Danhmuc>
+
+<div class="row g-4">
+    @foreach (var item in Model)
+    {
+        <div class="col-lg-3 col-md-4 col-6">
+            <a asp-controller="Jobs"
+               asp-action="Index"
+               asp-route-categoryId="@item.MaDanhMuc"
+               class="cat-item rounded p-4 h-100 text-decoration-none">
+
+                <h5 class="mb-2 text-dark">
+                    @item.TenDanhMuc
+                </h5>
+
+                <p class="text-muted mb-0">
+                    Explore Jobs
+                </p>
+            </a>
+        </div>
+    }
+</div>

@@ -1,0 +1,196 @@
+﻿@model List<CareerHub.Models.Tintuyendung>
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Find Jobs";
+    int currentPage = ViewBag.Page ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 0;
+    int totalJobs = ViewBag.TotalJobs ?? 0;
+    string keyword = ViewBag.Keyword as string ?? "";
+    string categoryId = ViewBag.CategoryId as string ?? "";
+    string location = ViewBag.Location as string ?? "";
+    string minSalary = Convert.ToString(ViewBag.MinSalary, CultureInfo.InvariantCulture) ?? "";
+    string maxSalary = Convert.ToString(ViewBag.MaxSalary, CultureInfo.InvariantCulture) ?? "";
+    string[] selectedWorkTypes = ViewBag.WorkType as string[] ?? Array.Empty<string>();
+
+    string PageUrl(int pageNumber)
+    {
+        var query = new List<KeyValuePair<string, string>>();
+        if (!string.IsNullOrWhiteSpace(keyword)) query.Add(new("keyword", keyword));
+        if (!string.IsNullOrWhiteSpace(categoryId)) query.Add(new("categoryId", categoryId));
+        if (!string.IsNullOrWhiteSpace(location)) query.Add(new("location", location));
+        if (!string.IsNullOrWhiteSpace(minSalary)) query.Add(new("minSalary", minSalary));
+        if (!string.IsNullOrWhiteSpace(maxSalary)) query.Add(new("maxSalary", maxSalary));
+        foreach (var type in selectedWorkTypes) query.Add(new("workType", type));
+        query.Add(new("page", pageNumber.ToString()));
+        return (Url.Action("Index", "Jobs") ?? "/Jobs/Index") + "?" +
+            string.Join("&", query.Select(x => Uri.EscapeDataString(x.Key) + "=" + Uri.EscapeDataString(x.Value)));
+    }
+}
+
+<!-- Page Header Start -->
+<div class="container-fluid bg-primary mb-5">
+    <div class="container py-5">
+        <h1 class="display-5 text-white mb-3">Find Jobs</h1>
+        <p class="text-white mb-0">Explore career opportunities that match your skills at CareerHub.</p>
+    </div>
+</div>
+<!-- Page Header End -->
+
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Filters -->
+            <div class="col-lg-3">
+                <div class="job-filter-card bg-light rounded p-4">
+                    <h5 class="mb-4">Search Filters</h5>
+                    <form id="jobSearchForm" method="get" asp-controller="Jobs" asp-action="Index">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Keyword</label>
+                            <input type="text" name="keyword" class="form-control"
+                                   placeholder="Job title or company..." value="@keyword" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Category</label>
+                            <select name="categoryId" class="form-select">
+                                <option value="">All Categories</option>
+                                <option value="IT01" selected="@(categoryId == "IT01")">Information Technology</option>
+                                <option value="MK01" selected="@(categoryId == "MK01")">Marketing &amp; SEO</option>
+                                <option value="TC01" selected="@(categoryId == "TC01")">Finance &amp; Accounting</option>
+                                <option value="NS01" selected="@(categoryId == "NS01")">Human Resources &amp; Administration</option>
+                                <option value="KD01" selected="@(categoryId == "KD01")">Business &amp; Sales</option>
+                                <option value="DH01" selected="@(categoryId == "DH01")">Design &amp; Graphics</option>
+                                <option value="XD01" selected="@(categoryId == "XD01")">Construction &amp; Architecture</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Location</label>
+                            <select name="location" class="form-select">
+                                <option value="">All Locations</option>
+                                <option value="Hà Nội" selected="@(location == "Hà Nội")">Hanoi</option>
+                                <option value="Sài Gòn" selected="@(location == "Sài Gòn")">Saigon</option>
+                                <option value="Đà Nẵng" selected="@(location == "Đà Nẵng")">Da Nang</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Minimum Salary (VND)</label>
+                            <input type="number" min="0" name="minSalary" class="form-control"
+                                   placeholder="e.g. 10000000" value="@minSalary" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Maximum Salary (VND)</label>
+                            <input type="number" min="0" name="maxSalary" class="form-control"
+                                   placeholder="e.g. 30000000" value="@maxSalary" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold d-block">Work Type</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="workType" value="Full-time"
+                                       id="fulltime" checked="@(selectedWorkTypes.Contains("Full-time"))" />
+                                <label class="form-check-label" for="fulltime">Full-time</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="workType" value="Part-time"
+                                       id="parttime" checked="@(selectedWorkTypes.Contains("Part-time"))" />
+                                <label class="form-check-label" for="parttime">Part-time</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="workType" value="Internship"
+                                       id="intern" checked="@(selectedWorkTypes.Contains("Internship"))" />
+                                <label class="form-check-label" for="intern">Internship</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                        <a asp-controller="Jobs" asp-action="Index" class="btn btn-outline-secondary w-100 mt-2">Clear Filters</a>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Job listing -->
+            <div class="col-lg-9">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3 class="mb-1">Latest Jobs</h3>
+                        <span id="jobCount" class="text-muted">@totalJobs job(s) found</span>
+                    </div>
+                    <!-- The original sort dropdown was not wired to the Controller; keep its appearance. -->
+                    <select class="form-select w-auto mt-2 mt-md-0" aria-label="Sort jobs" disabled title="Sorting is not implemented yet">
+                        <option>Newest</option>
+                        <option>Highest Salary</option>
+                    </select>
+                </div>
+
+                <div id="jobList">
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        @foreach (var job in Model)
+                        {
+                            <div class="job-item p-4 mb-4">
+                                <div class="row g-4">
+                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
+                                        <img class="flex-shrink-0 img-fluid border rounded"
+                                             src="@Url.Content("~/Template/img/" + (job.MaCongTyNavigation?.Logo ?? "com-logo-1.jpg"))"
+                                             alt="Company logo" style="width: 80px; height: 80px; object-fit: contain;" />
+                                        <div class="text-start ps-4">
+                                            <h5 class="mb-2">
+                                                <a asp-controller="Jobs" asp-action="Details" asp-route-id="@job.MaTin" class="text-dark">@job.TieuDe</a>
+                                            </h5>
+                                            <span class="d-block mb-2 text-muted">@(job.MaCongTyNavigation?.TenCongTy ?? "Company not specified")</span>
+                                            <span class="text-truncate me-3">
+                                                <i class="fa fa-map-marker-alt text-primary me-2"></i>@job.DiaChiLamViec
+                                            </span>
+                                            <span class="text-truncate me-3">
+                                                <i class="far fa-clock text-primary me-2"></i>@job.LoaiHinh
+                                            </span>
+                                            <span class="text-truncate">
+                                                <i class="far fa-money-bill-alt text-primary me-2"></i>
+                                                @string.Format("{0:N0}", job.LuongTu) - @string.Format("{0:N0}", job.LuongDen) VND
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
+                                        <a asp-controller="Jobs" asp-action="Details" asp-route-id="@job.MaTin" class="btn btn-primary mb-3">View Details</a>
+                                        <small class="text-muted">
+                                            <i class="far fa-calendar-alt text-primary me-2"></i>
+                                            Deadline: @(job.HanNop?.ToString("dd/MM/yyyy") ?? "Not specified")
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">No jobs found matching your search.</div>
+                    }
+                </div>
+
+                <div id="jobPagination">
+                    @if (totalPages > 1)
+                    {
+                        <nav aria-label="Job pagination">
+                            <ul class="pagination justify-content-center mt-4">
+                                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                    <a class="page-link" href="@PageUrl(Math.Max(1, currentPage - 1))">Previous</a>
+                                </li>
+                                @for (int i = 1; i <= totalPages; i++)
+                                {
+                                    <li class="page-item @(i == currentPage ? "active" : "")">
+                                        <a class="page-link" href="@PageUrl(i)">@i</a>
+                                    </li>
+                                }
+                                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                    <a class="page-link" href="@PageUrl(Math.Min(totalPages, currentPage + 1))">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/jobs.js" asp-append-version="true"></script>
+}

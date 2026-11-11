@@ -1,29 +1,60 @@
+
+using CareerHub.Models;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// MVC
 builder.Services.AddControllersWithViews();
+
+// SQL Server - Entity Framework Core
+builder.Services.AddDbContext<CareerHubContext>();
+
+// Swagger API
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Error handling
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
-app.UseRouting();
+// Swagger
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
+// Middleware
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
 app.UseAuthorization();
 
-app.MapStaticAssets();
+// API Controllers
+app.MapControllers();
 
+// MVC Routes
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
-
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapGet("/debug/routes", (
+    Microsoft.AspNetCore.Routing.EndpointDataSource endpoints) =>
+{
+    return Results.Json(
+        endpoints.Endpoints
+            .OfType<Microsoft.AspNetCore.Routing.RouteEndpoint>()
+            .Select(e => new
+            {
+                Route = e.RoutePattern.RawText,
+                Name = e.DisplayName
+            })
+            .ToList()
+    );
+});
 app.Run();

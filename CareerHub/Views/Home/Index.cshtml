@@ -1,5 +1,358 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-    Layout = "~/Views/Shared/_layout.cshtml";
+﻿
+@model List<CareerHub.Models.Tintuyendung>
+
+@{
+    ViewData["Title"] = "Home";
 }
- 
+@if (false)
+{
+    <!-- SEARCH BANNER -->
+    <section class="hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-4 fw-bold text-white">
+                        Find the Right Job for You
+                    </h1>
+
+                    <p class="text-white fs-5">
+                        Explore thousands of exciting job opportunities
+                        from leading companies.
+                    </p>
+
+                    <form asp-controller="Jobs"
+                    asp-action="Index"
+                    method="get"
+                    class="search-box row g-2 p-3 bg-white rounded">
+
+                        <div class="col-md-9">
+                            <input type="text"
+                            name="keyword"
+                            class="form-control form-control-lg"
+                            placeholder="Enter job title or company name..." />
+                        </div>
+
+                        <div class="col-md-3 d-grid">
+                            <button type="submit"
+                            class="btn btn-success btn-lg">
+                                Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- POPULAR CATEGORIES -->
+    <section class="container py-5">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold">Popular Categories</h2>
+            <p class="text-muted">
+                Choose the right career field for you
+            </p>
+        </div>
+
+        @await Component.InvokeAsync("DanhMuc")
+    </section>
+    @await Html.PartialAsync(
+    "~/Views/Shared/Components/ViecLamMoi/Default.cshtml",
+    Model
+)
+    <!-- LATEST JOBS -->
+    <section class="container pb-5">
+        <div class="d-flex justify-content-between mb-4">
+            <h2 class="fw-bold">Latest Jobs</h2>
+
+            <a asp-controller="Jobs"
+            asp-action="Index"
+            class="text-success">
+                View All
+            </a>
+        </div>
+
+        @if (Model != null && Model.Count > 0)
+        {
+            @foreach (var job in Model)
+            {
+                <div class="job-card mb-4">
+                    <h5>@job.TieuDe</h5>
+
+                    <p class="text-muted">
+                        @(
+                                    job.MaCongTyNavigation?.TenCongTy
+                                                                        ?? "Company not specified"
+                                    )
+                                </p>
+
+                                <p>
+                                    @(job.DiaChiLamViec ?? "Not specified")
+                                    |
+                                    @(job.LoaiHinh ?? "Not specified")
+                                </p>
+
+                                <strong class="text-success">
+                                    @if (job.LuongTu.HasValue &&
+                                                                         job.LuongDen.HasValue)
+                        {
+                            @($"{job.LuongTu.Value:N0} - {job.LuongDen.Value:N0} VND")
+                        }
+                        else
+                        {
+                            @:Negotiable
+                        }
+                    </strong>
+
+                    <br />
+
+                    <a asp-controller="Jobs"
+                    asp-action="Details"
+                    asp-route-id="@job.MaTin"
+                    class="btn btn-success mt-3">
+                        View Details
+                    </a>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="alert alert-info">
+                No jobs available at the moment.
+            </div>
+        }
+    </section>
+}
+<!-- JobEntry Banner -->
+<div class="container-fluid p-0">
+    <div class="owl-carousel header-carousel position-relative">
+
+        <div class="owl-carousel-item position-relative">
+            <img class="img-fluid w-100"
+                 src="~/Template/img/carousel-1.jpg"
+                 alt="Find Jobs" />
+
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center"
+                 style="background:rgba(43,57,64,.5);">
+
+                <div class="container">
+                    <div class="row justify-content-start">
+                        <div class="col-10 col-lg-8">
+
+                            <h1 class="display-3 text-white animated slideInDown mb-4">
+                                Find The Perfect Job That You Deserve
+                            </h1>
+
+                            <p class="fs-5 fw-medium text-white mb-4 pb-2">
+                                Discover exciting career opportunities
+                                from leading companies.
+                            </p>
+
+                            <a asp-controller="Jobs"
+                               asp-action="Index"
+                               class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">
+                                Tìm việc làm
+                            </a>
+
+                            <a href="#category"
+                               class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">
+                                Find A Talent
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="owl-carousel-item position-relative">
+            <img class="img-fluid w-100"
+                 src="~/Template/img/carousel-2.jpg"
+                 alt="Career Opportunities" />
+
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center"
+                 style="background:rgba(43,57,64,.5);">
+
+                <div class="container">
+                    <div class="row justify-content-start">
+                        <div class="col-10 col-lg-8">
+
+                            <h1 class="display-3 text-white animated slideInDown mb-4">
+                                Find The Best Startup Job That Fits You
+                            </h1>
+
+                            <p class="fs-5 fw-medium text-white mb-4 pb-2">
+                                Build your future with CareerHub.
+                            </p>
+
+                            <a asp-controller="Jobs"
+                               asp-action="Index"
+                               class="btn btn-primary py-md-3 px-md-5 me-3">
+                                Tìm việc làm
+                            </a>
+
+                            <a href="#category"
+                               class="btn btn-secondary py-md-3 px-md-5">
+                                Find A Talent
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- JobEntry Search -->
+<div class="container-fluid bg-primary mb-5 wow fadeIn"
+     data-wow-delay="0.1s">
+
+    <div class="container py-5">
+
+        <form asp-controller="Jobs"
+              asp-action="Index"
+              method="get">
+
+            <div class="row g-2">
+
+                <div class="col-md-4">
+                    <input type="text"
+                           name="keyword"
+                           class="form-control border-0"
+                           placeholder="Nhập tên công việc hoặc công ty" />
+                </div>
+
+                <div class="col-md-3">
+                    <select name="categoryId"
+                            id="homeCategory"
+                            class="form-select border-0">
+                        <option value="">Tất cả ngành nghề</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <input type="text"
+                           name="location"
+                           class="form-control border-0"
+                           placeholder="Tất cả địa điểm" />
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit"
+                            class="btn btn-dark border-0 w-100">
+                        Tìm kiếm
+                    </button>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+</div>
+<!-- Job Categories -->
+<div class="container-xxl py-5" id="category">
+    <div class="container">
+
+        <h2 class="text-center mb-5 wow fadeInUp">
+            Explore By Category
+        </h2>
+
+        @await Component.InvokeAsync("DanhMuc")
+
+    </div>
+</div>
+<!-- Latest Jobs -->
+<div class="container-xxl py-5" id="latest-jobs">
+    <div class="container">
+
+        <h2 class="text-center mb-5 wow fadeInUp">
+            Latest Jobs
+        </h2>
+
+        @await Component.InvokeAsync("ViecLamMoi")
+
+        <div class="text-center mt-5">
+            <a asp-controller="Jobs"
+               asp-action="Index"
+               class="btn btn-primary py-3 px-5">
+                Browse More Jobs
+            </a>
+        </div>
+
+    </div>
+</div>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            const categorySelect =
+                document.getElementById("homeCategory");
+
+            if (!categorySelect) return;
+
+            try {
+                const response = await fetch("/api/categories");
+
+                if (!response.ok) {
+                    throw new Error("Cannot load categories");
+                }
+
+                const categories = await response.json();
+
+                categories.forEach(category => {
+                    const option = document.createElement("option");
+
+                    option.value = category.maDanhMuc;
+                    option.textContent = category.tenDanhMuc;
+
+                    categorySelect.appendChild(option);
+                });
+            }
+            catch (error) {
+                console.error("Category loading failed:", error);
+            }
+        });
+    </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        document.querySelectorAll("a").forEach(function (link) {
+            if (link.textContent.trim() === "Tìm việc làm") {
+                link.textContent = "Find Jobs";
+            }
+        });
+
+        const keyword = document.querySelector(
+            'input[name="keyword"]'
+        );
+
+        if (keyword) {
+            keyword.placeholder = "Job title or company name";
+        }
+
+        const location = document.querySelector(
+            'input[name="location"]'
+        );
+
+        if (location) {
+            location.placeholder = "All Locations";
+        }
+
+        const category = document.querySelector("#homeCategory");
+
+        if (category && category.options.length > 0) {
+            category.options[0].textContent = "All Categories";
+        }
+
+        document.querySelectorAll('button[type="submit"]').forEach(
+            function (button) {
+                if (button.textContent.trim() === "Tìm kiếm") {
+                    button.textContent = "Search";
+                }
+            }
+        );
+
+    });
+</script>
+}
