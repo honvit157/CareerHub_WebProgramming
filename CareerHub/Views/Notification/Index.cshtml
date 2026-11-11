@@ -1,0 +1,78 @@
+﻿@model IEnumerable<CareerHub.Models.Thongbao>
+@{
+    ViewData["Title"] = "Thông báo của tôi";
+    int page = ViewBag.Page;
+    int totalPages = ViewBag.TotalPages;
+}
+
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+            <h1 class="mb-0">Thông báo của tôi</h1>
+            <button type="button" id="markAllBtn" class="btn btn-outline-primary">Đánh dấu tất cả đã đọc</button>
+        </div>
+
+        <form id="notifCsrf">@Html.AntiForgeryToken()</form>
+
+        <div class="list-group" id="notifList">
+            @foreach (var n in Model)
+            {
+                <div class="list-group-item @(n.DaDoc == true ? "" : "list-group-item-primary")" data-id="@n.MaThongBao">
+                    <div class="d-flex justify-content-between gap-3">
+                        <h6 class="mb-1 @(n.DaDoc == true ? "" : "fw-bold")">@n.TieuDe</h6>
+                        <small class="text-muted text-nowrap">@n.NgayTao?.ToString("dd/MM/yyyy HH:mm")</small>
+                    </div>
+                    <p class="mb-0">@n.NoiDung</p>
+                </div>
+            }
+            @if (!Model.Any())
+            {
+                <div class="list-group-item text-center text-muted py-4">Bạn chưa có thông báo nào.</div>
+            }
+        </div>
+
+        @if (totalPages > 1)
+        {
+            <nav class="mt-4" aria-label="Phân trang thông báo">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(page <= 1 ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(page - 1)">Trước</a>
+                    </li>
+                    @for (var i = 1; i <= totalPages; i++)
+                    {
+                        <li class="page-item @(i == page ? "active" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(page >= totalPages ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(page + 1)">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    </div>
+</div>
+
+<script>
+    (function () {
+        var btn = document.getElementById('markAllBtn');
+        var token = document.querySelector('#notifCsrf input[name="__RequestVerificationToken"]').value;
+        btn.addEventListener('click', function () {
+            var body = new FormData();
+            body.append('__RequestVerificationToken', token);
+            btn.disabled = true;
+            fetch('@Url.Action("MarkAllRead", "Notification")', { method: 'POST', body: body, credentials: 'same-origin' })
+                .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+                .then(function () {
+                    document.querySelectorAll('#notifList .list-group-item-primary').forEach(function (el) {
+                        el.classList.remove('list-group-item-primary');
+                        var h = el.querySelector('h6'); if (h) h.classList.remove('fw-bold');
+                    });
+                    // cập nhật luôn chuông trên thanh menu (nếu có)
+                    if (window.updateNotifBell) window.updateNotifBell(0);
+                })
+                .catch(function () { alert('Không thể cập nhật, vui lòng thử lại.'); })
+                .finally(function () { btn.disabled = false; });
+        });
+    })();
+</script>
