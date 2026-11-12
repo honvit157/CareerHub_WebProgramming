@@ -1,0 +1,116 @@
+@model CareerHub.Models.ViewModels.ProfileViewModel
+
+@{
+    ViewData["Title"] = "Hồ sơ của tôi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-xxl py-5">
+    <div class="container" style="max-width: 900px;">
+        <!-- TIÊU ĐỀ TRANG -->
+        <div class="d-flex align-items-center mb-4">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-sm me-3 rounded-circle" style="width: 36px; height: 36px; line-height: 24px;">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+            <div>
+                <h2 class="mb-0 fw-bold">Hồ sơ trực tuyến của tôi</h2>
+                <small class="text-muted">Hoàn thiện các phần thông tin dưới đây để ứng tuyển nhanh chóng với nhà tuyển dụng</small>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fa fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <form asp-action="Profile" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="MaNguoiDung" />
+
+            <!-- CARD 1: THÔNG TIN CÁ NHÂN -->
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fa fa-user text-primary me-2"></i>Thông tin cá nhân
+                    </h5>
+                    <span class="badge bg-success-subtle text-success border border-success px-2 py-1">Đã kích hoạt</span>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="HoTen" class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
+                        <input asp-for="HoTen" class="form-control" required />
+                        <span asp-validation-for="HoTen" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label fw-semibold">Địa chỉ Email</label>
+                        <input asp-for="Email" class="form-control bg-light" readonly />
+                        <small class="text-muted">Email gắn liền với tài khoản đăng nhập</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="DienThoai" class="form-label fw-semibold">Số điện thoại</label>
+                        <input asp-for="DienThoai" class="form-control" placeholder="VD: 0912345678" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="DiaChi" class="form-label fw-semibold">Địa chỉ hiện tại</label>
+                        <input asp-for="DiaChi" class="form-control" placeholder="VD: Cầu Giấy, Hà Nội" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD 2: VỊ TRÍ & GIỚI THIỆU BẢN THÂN -->
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-3">
+                <h5 class="fw-bold mb-3">
+                    <i class="fa fa-bullhorn text-warning me-2"></i>Giới thiệu bản thân & Mục tiêu
+                </h5>
+                <div class="mb-3">
+                    <label asp-for="ViTriMongMuon" class="form-label fw-semibold">Vị trí mong muốn ứng tuyển</label>
+                    <input asp-for="ViTriMongMuon" class="form-control" placeholder="VD: Lập trình viên Backend .NET / Fullstack Developer" />
+                </div>
+                <div class="mb-2">
+                    <label asp-for="GioiThieuBanThan" class="form-label fw-semibold">Đôi nét giới thiệu</label>
+                    <textarea asp-for="GioiThieuBanThan" class="form-control" rows="3" 
+                              placeholder="Tóm tắt ngắn gọn điểm mạnh, đam mê và định hướng phát triển của bạn..."></textarea>
+                </div>
+            </div>
+
+            <!-- CARD 3: HỌC VẤN & KINH NGHIỆM -->
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-3">
+                <h5 class="fw-bold mb-3">
+                    <i class="fa fa-graduation-cap text-info me-2"></i>Học vấn & Trình độ chuyên môn
+                </h5>
+                <div class="mb-3">
+                    <label asp-for="HocVan" class="form-label fw-semibold">Trình độ học vấn cao nhất</label>
+                    <input asp-for="HocVan" class="form-control" placeholder="VD: Đại học - Chuyên ngành Công nghệ thông tin (ĐH GTVT)" />
+                </div>
+                <div class="mb-2">
+                    <label asp-for="KinhNghiemLamViec" class="form-label fw-semibold">Kinh nghiệm làm việc / Dự án đã tham gia</label>
+                    <textarea asp-for="KinhNghiemLamViec" class="form-control" rows="4" 
+                              placeholder="Mô tả công việc từng làm, dự án trường học hoặc thực tập bạn đã tham gia..."></textarea>
+                </div>
+            </div>
+
+            <!-- CARD 4: KỸ NĂNG -->
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-3">
+                <h5 class="fw-bold mb-3">
+                    <i class="fa fa-tools text-success me-2"></i>Kỹ năng quan trọng
+                </h5>
+                <div class="mb-2">
+                    <label asp-for="KyNang" class="form-label fw-semibold">Danh sách kỹ năng (cách nhau bởi dấu phẩy)</label>
+                    <input asp-for="KyNang" class="form-control" placeholder="VD: C#, ASP.NET Core, SQL Server, HTML/CSS, Git, Làm việc nhóm" />
+                    <small class="text-muted">Ghi các kỹ năng chính để nhà tuyển dụng dễ dàng đánh giá sự phù hợp</small>
+                </div>
+            </div>
+
+            <!-- NÚT LƯU HỒ SƠ -->
+            <div class="text-end mb-5">
+                <button type="submit" class="btn btn-primary btn-lg px-5 fw-bold shadow-sm">
+                    <i class="fa fa-save me-2"></i>Lưu hồ sơ trực tuyến
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

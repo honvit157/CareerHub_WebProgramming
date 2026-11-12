@@ -1,0 +1,80 @@
+﻿@model CareerHub.Models.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Đăng ký tài khoản";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-success text-white text-center py-3">
+                    <h4 class="mb-0 text-white fw-bold">TẠO TÀI KHOẢN MỚI</h4>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Báo lỗi chung nếu có -->
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <form asp-controller="Account" asp-action="Register" method="post">
+                        <!-- Họ và tên -->
+                        <div class="mb-3">
+                            <label asp-for="HoTen" class="form-label fw-semibold"></label>
+                            <input asp-for="HoTen" class="form-control" placeholder="Ví dụ: Nguyễn Văn A" />
+                            <span asp-validation-for="HoTen" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-semibold"></label>
+                            <input asp-for="Email" class="form-control" placeholder="name@example.com" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Số điện thoại -->
+                        <div class="mb-3">
+                            <label asp-for="SoDienThoai" class="form-label fw-semibold"></label>
+                            <input asp-for="SoDienThoai" class="form-control" placeholder="0912345678" />
+                            <span asp-validation-for="SoDienThoai" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Chọn Loại tài khoản (Ứng viên hay Doanh nghiệp) -->
+                        <div class="mb-3">
+                            <label asp-for="MaVaiTro" class="form-label fw-semibold"></label>
+                            <select asp-for="MaVaiTro" class="form-select">
+                                <option value="3" selected>Ứng viên (Tìm việc làm, nộp hồ sơ CV)</option>
+                                <option value="2">Nhà tuyển dụng (Đăng tin tuyển dụng, tìm ứng viên)</option>
+                            </select>
+                            <span asp-validation-for="MaVaiTro" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Mật khẩu và Xác nhận mật khẩu (chia 2 cột) -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="MatKhau" class="form-label fw-semibold"></label>
+                                <input asp-for="MatKhau" type="password" class="form-control" placeholder="••••••••" />
+                                <span asp-validation-for="MatKhau" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="XacNhanMatKhau" class="form-label fw-semibold"></label>
+                                <input asp-for="XacNhanMatKhau" type="password" class="form-control" placeholder="••••••••" />
+                                <span asp-validation-for="XacNhanMatKhau" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Nút Đăng ký -->
+                        <button type="submit" class="btn btn-success w-100 py-2 fw-bold">Đăng ký tài khoản</button>
+
+                        <div class="text-center mt-3">
+                            <span class="text-muted">Đã có tài khoản?</span>
+                            <a asp-controller="Account" asp-action="Login" class="text-decoration-none fw-semibold">Đăng nhập ngay</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

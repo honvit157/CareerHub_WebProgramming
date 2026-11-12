@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title>JobEntry - Job Portal Website Template</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+	<meta content="width=device-width, <init></init>ial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
 
@@ -49,25 +49,62 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav ms-auto p-4 p-lg-0">
-                    <a href="index.html" class="nav-item nav-link active">Home</a>
-                    <a href="about.html" class="nav-item nav-link">About</a>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Jobs</a>
-                        <div class="dropdown-menu rounded-0 m-0">
-                            <a href="job-list.html" class="dropdown-item">Job List</a>
-                            <a href="job-detail.html" class="dropdown-item">Job Detail</a>
+                <div class="navbar-nav ms-auto p-4 p-lg-0 align-items-center">
+                    <a asp-controller="Home" asp-action="Index" class="nav-item nav-link active">Trang chủ</a>
+
+                    @* 1. NẾU NGƯỜI DÙNG ĐÃ ĐĂNG NHẬP THÀNH CÔNG *@
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        @* Nếu là NHÀ TUYỂN DỤNG *@
+                        @if (User.IsInRole("Nhà tuyển dụng"))
+                        {
+                            <a asp-controller="Employer" asp-action="ManageJobs" class="nav-item nav-link">Quản lý tuyển dụng</a>
+                        }
+                        @* Nếu là ADMIN *@
+                        else if (User.IsInRole("Quản trị viên"))
+                        {
+                            <a asp-controller="Admin" asp-action="Dashboard" class="nav-item nav-link text-danger fw-bold">Quản trị Admin</a>
+                        }
+
+                        <!-- DROPDOWN MENU KHI BẤM VÀO TÊN NGƯỜI DÙNG -->
+                        <div class="nav-item dropdown ms-2">
+                            <a href="#" class="nav-link dropdown-toggle text-primary fw-bold d-flex align-items-center" data-bs-toggle="dropdown">
+                                <i class="fa fa-user-circle fa-lg me-1 text-primary"></i>
+                                <span>@User.Identity.Name</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end shadow border-0 m-0 rounded-3">
+                                @if (User.IsInRole("Ứng viên"))
+                                {
+                                    <div class="dropdown-header text-muted small fw-bold text-uppercase">Hồ sơ & Ứng tuyển</div>
+                                    <a asp-controller="Candidate" asp-action="Profile" class="dropdown-item py-2">
+                                        <i class="fa fa-id-card me-2 text-primary"></i>Hồ sơ trực tuyến của tôi
+                                    </a>
+                                    <a asp-controller="Candidate" asp-action="MyCV" class="dropdown-item py-2">
+                                        <i class="far fa-file-pdf me-2 text-info"></i>Quản lý file CV
+                                    </a>
+                                    <a asp-controller="Candidate" asp-action="MyApplications" class="dropdown-item py-2">
+                                        <i class="fa fa-paper-plane me-2 text-success"></i>Lịch sử việc đã nộp
+                                    </a>
+                                    <a asp-controller="Candidate" asp-action="SavedJobs" class="dropdown-item py-2">
+                                        <i class="fas fa-heart me-2 text-danger"></i>Việc làm đã lưu
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                }
+                                
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="px-2 py-1">
+                                    <button type="submit" class="dropdown-item text-danger rounded py-2">
+                                        <i class="fa fa-sign-out-alt me-2"></i>Đăng xuất
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                        <div class="dropdown-menu rounded-0 m-0">
-                            <a href="category.html" class="dropdown-item">Job Category</a>
-                            <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                            <a href="404.html" class="dropdown-item">404</a>
-                        </div>
-                    </div>
-                    <a href="contact.html" class="nav-item nav-link">Contact</a>
+                    }
+                    @* 2. NẾU CHƯA ĐĂNG NHẬP (KHÁCH VÃNG LAI) *@
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="nav-item nav-link">Đăng nhập</a>
+                        <a asp-controller="Account" asp-action="Register" class="nav-item nav-link">Đăng ký</a>
+                    }
                 </div>
                 <a href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Post A Job<i class="fa fa-arrow-right ms-3"></i></a>
             </div>
@@ -702,7 +739,7 @@
 
 <!-- JavaScript Libraries -->
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/~/Template/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/Template/lib/wow/wow.min.js"></script>
 <script src="~/Template/lib/easing/easing.min.js"></script>
 <script src="~/Template/lib/waypoints/waypoints.min.js"></script>
@@ -710,6 +747,41 @@
 
 <!-- Template Javascript -->
 <script src="~/Template/js/main.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+    <!-- Chỗ chứa chiếc Popup Ứng tuyển -->
+    <div id="applyModalContainer"></div>
+
+    <!-- Script gọi AJAX để mở Popup ứng tuyển -->
+    <script>
+        function openApplyModal(maTin) {
+            @if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                <text>
+                    alert("Vui lòng đăng nhập tài khoản Ứng viên để ứng tuyển công việc này!");
+                    window.location.href = '/Account/Login?returnUrl=' + encodeURIComponent(window.location.pathname);
+                    return;
+                </text>
+            }
+
+            $.ajax({
+                url: '/Candidate/GetApplyModal?maTin=' + maTin,
+                type: 'GET',
+                success: function (html) {
+                    $('#applyModalContainer').html(html);
+                    if (window.bootstrap && bootstrap.Modal) {
+                        var myModal = new bootstrap.Modal(document.getElementById('applyJobModal'));
+                        myModal.show();
+                    } else {
+                        $('#applyJobModal').modal('show');
+                    }
+                },
+                error: function (xhr) {
+                    alert("Có lỗi xảy ra: " + (xhr.responseText || "Không thể tải mẫu ứng tuyển!"));
+                }
+            });
+        }
+    </script>
 </body>
+
 
 </html>

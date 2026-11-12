@@ -1,0 +1,102 @@
+@model IEnumerable<CareerHub.Models.Vieclamluu>
+
+@{
+    ViewData["Title"] = "Việc làm đã lưu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-xxl py-5">
+    <div class="container">
+        <!-- TIÊU ĐỀ TRANG -->
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-6 mb-2">Việc Làm Đã Lưu</h1>
+                <p class="text-muted">Danh sách các cơ hội việc làm bạn đã đánh dấu yêu thích</p>
+            </div>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="card border-0 shadow-sm p-5 text-center">
+                <i class="far fa-heart fa-4x text-muted mb-3"></i>
+                <h5>Bạn chưa lưu việc làm nào.</h5>
+                <p class="text-muted">Hãy lướt trang chủ và bấm vào nút thả tim ở các việc làm bạn quan tâm nhé!</p>
+                <div class="mt-3">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                        <i class="fa fa-search me-2"></i>Tìm việc làm ngay
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row g-3">
+                @foreach (var item in Model)
+                {
+                    var tin = item.MaTinNavigation;
+                    if (tin != null)
+                    {
+                        <div class="col-lg-6" id="job-card-@tin.MaTin">
+                            <div class="job-item p-4 border rounded shadow-sm h-100 bg-white">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h5 class="mb-1 text-primary fw-bold">@tin.TieuDe</h5>
+                                        <span class="text-muted">
+                                            <i class="fa fa-building me-1"></i>@(tin.MaCongTyNavigation?.TenCongTy ?? "Công ty")
+                                        </span>
+                                    </div>
+                                    <button class="btn btn-danger btn-sm" onclick="removeSavedJob(@tin.MaTin)" title="Bỏ lưu">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                </div>
+
+                                <div class="mb-3 text-muted">
+                                    <span class="me-3">
+                                        <i class="fa fa-map-marker-alt text-primary me-1"></i>@(tin.DiaChiLamViec ?? "Toàn quốc")
+                                    </span>
+                                    <span class="me-3">
+                                        <i class="far fa-clock text-primary me-1"></i>@(tin.LoaiHinh ?? "Toàn thời gian")
+                                    </span>
+                                    <span class="text-danger fw-bold">
+                                        <i class="far fa-money-bill-alt text-primary me-1"></i>
+                                        @(tin.LuongTu.HasValue ? $"{(tin.LuongTu / 1000000):0.#} - {(tin.LuongDen / 1000000):0.#} triệu" : "Thỏa thuận")
+                                    </span>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="far fa-calendar-alt me-1"></i>Đã lưu: @(item.NgayLuu.HasValue ? item.NgayLuu.Value.ToString("dd/MM/yyyy") : "")
+                                    </small>
+                                    <button class="btn btn-primary btn-sm" onclick="openApplyModal(@tin.MaTin)">
+                                        <i class="fa fa-paper-plane me-1"></i>Ứng tuyển
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function removeSavedJob(maTin) {
+            if (!confirm('Bạn có chắc muốn bỏ lưu công việc này?')) return;
+
+            $.ajax({
+                url: '/api/jobapi/toggle-save/' + maTin,
+                type: 'POST',
+                success: function (res) {
+                    if (res.success && !res.isSaved) {
+                        $('#job-card-' + maTin).fadeOut(300, function () { $(this).remove(); });
+                    }
+                },
+                error: function () {
+                    alert('Lỗi khi hủy lưu việc làm!');
+                }
+            });
+        }
+    </script>
+}
