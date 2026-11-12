@@ -1,0 +1,197 @@
+﻿
+@model CareerHub.Models.Tintuyendung
+
+@{
+    ViewData["Title"] = "Job Details";
+
+    var company = Model.MaCongTyNavigation;
+
+    var logo = string.IsNullOrWhiteSpace(company?.Logo)
+        ? "com-logo-1.jpg"
+        : company.Logo.Replace("\\", "/").Split('/').Last();
+
+    string salary = "Negotiable";
+
+    if (Model.LuongTu.HasValue && Model.LuongDen.HasValue)
+    {
+        salary = $"{Model.LuongTu.Value:N0} - {Model.LuongDen.Value:N0} VND";
+    }
+    else if (Model.LuongTu.HasValue)
+    {
+        salary = $"From {Model.LuongTu.Value:N0} VND";
+    }
+    else if (Model.LuongDen.HasValue)
+    {
+        salary = $"Up to {Model.LuongDen.Value:N0} VND";
+    }
+}
+
+<!-- Page Header Start -->
+<div class="container-fluid bg-primary mb-5">
+    <div class="container py-5">
+        <h1 class="display-5 text-white mb-3">
+            Job Details
+        </h1>
+
+        <p class="text-white mb-0">
+            Recruitment information and career opportunities at CareerHub.
+        </p>
+    </div>
+</div>
+<!-- Page Header End -->
+
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- LEFT COLUMN -->
+            <div class="col-lg-8">
+
+                <div class="job-detail-card bg-light rounded p-4 p-md-5 mb-4">
+
+                    <div class="d-flex flex-wrap align-items-center mb-4">
+
+                        <img src="@Url.Content("~/Template/img/" + logo)"
+                             alt="Company logo"
+                             class="img-fluid border rounded me-4 mb-3"
+                             style="width:90px;height:90px;object-fit:contain;"
+                             onerror="this.onerror=null;this.src='/Template/img/com-logo-1.jpg';" />
+
+                        <div>
+                            <h2 class="mb-2">
+                                @Model.TieuDe
+                            </h2>
+
+                            <h5 class="text-primary mb-2">
+                                @(company?.TenCongTy ?? "Company not specified")
+                            </h5>
+
+                            <span class="text-muted me-3">
+                                <i class="fa fa-map-marker-alt text-primary me-2"></i>
+                                @(Model.DiaChiLamViec ?? "Not specified")
+                            </span>
+
+                            <span class="text-muted">
+                                <i class="far fa-clock text-primary me-2"></i>
+                                @(Model.LoaiHinh ?? "Not specified")
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 border-top pt-4">
+
+                        <div class="col-md-4">
+                            <small class="text-muted d-block">
+                                Salary
+                            </small>
+                            <strong>@salary</strong>
+                        </div>
+
+                        <div class="col-md-4">
+                            <small class="text-muted d-block">
+                                Experience
+                            </small>
+                            <strong>
+                                @(Model.KinhNghiem ?? "Not required")
+                            </strong>
+                        </div>
+
+                        <div class="col-md-4">
+                            <small class="text-muted d-block">
+                                Application Deadline
+                            </small>
+                            <strong>
+                                @(Model.HanNop?.ToString("dd/MM/yyyy")
+                                    ?? "Not specified")
+                            </strong>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="job-detail-card bg-light rounded p-4 mb-4">
+                    <h4 class="mb-3">Job Description</h4>
+
+                    <p style="white-space:pre-line;">
+                        @(Model.MoTaCv ?? "No description available.")
+                    </p>
+                </div>
+
+                <div class="job-detail-card bg-light rounded p-4 mb-4">
+                    <h4 class="mb-3">Job Requirements</h4>
+
+                    <p class="mb-0" style="white-space:pre-line;">
+                        @(Model.YeuCau ?? "No requirements available.")
+                    </p>
+                </div>
+
+                <div class="job-detail-card bg-light rounded p-4 mb-4">
+                    <h4 class="mb-3">Benefits</h4>
+
+                    <p class="mb-0" style="white-space:pre-line;">
+                        @(Model.QuyenLoi ?? "No benefits specified.")
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div class="col-lg-4">
+
+                <div class="job-detail-card bg-light rounded p-4 mb-4">
+
+                    <h4 class="mb-3">Company Information</h4>
+
+                    <h5>
+                        @(company?.TenCongTy ?? "Company not specified")
+                    </h5>
+
+                    <p class="text-muted" style="white-space:pre-line;">
+                        @(company?.MoTa ?? "No company description available.")
+                    </p>
+
+                    <p class="mb-2">
+                        <i class="fa fa-map-marker-alt text-primary me-2"></i>
+                        @(company?.DiaChi ?? "Address not specified")
+                    </p>
+
+                    @if (!string.IsNullOrWhiteSpace(company?.Website))
+                    {
+                        <p class="mb-0">
+                            <i class="fa fa-globe text-primary me-2"></i>
+
+                            <a href="@company.Website"
+                               target="_blank"
+                               rel="noopener noreferrer">
+                                Company Website
+                            </a>
+                        </p>
+                    }
+
+                </div>
+
+                <div class="job-detail-card bg-light rounded p-4">
+
+                    <h4 class="mb-3">Apply for This Job</h4>
+
+                    <p>
+                        Prepare your CV to apply for this position.
+                    </p>
+
+                    <a href="#"
+                       class="btn btn-primary w-100">
+                        Apply Now
+                    </a>
+
+                    <a asp-controller="Jobs"
+                       asp-action="Index"
+                       class="btn btn-outline-primary w-100 mt-2">
+                        Back to Job List
+                    </a>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
