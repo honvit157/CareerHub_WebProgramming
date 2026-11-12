@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Đăng ký kết nối CSDL cho CareerHubContext
 builder.Services.AddDbContext<CareerHubContext>(options =>
-    options.UseSqlServer("Data Source=DAVIHOAN\\SQLEXPRESS;Initial Catalog=CareerHub;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False"));
+    options.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=CareerHub;Integrated Security=True;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False"));
 
 // Add services to the container (MVC & Controllers)
 builder.Services.AddControllersWithViews();
