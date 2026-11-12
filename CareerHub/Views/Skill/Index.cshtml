@@ -1,0 +1,105 @@
+﻿@model IEnumerable<CareerHub.Models.Kynang>
+
+@{
+    ViewData["Title"] = "Quản lý kỹ năng";
+}
+
+<div class="container-fluid py-4">
+
+    <h2 class="mb-4">Quản lý kỹ năng</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            Danh sách kỹ năng
+        </div>
+
+        <div class="card-body">
+        <!-- Form tìm kiếm kỹ năng -->
+<form asp-controller="Skill"
+      asp-action="Index"
+      method="get"
+      class="row g-3 mb-4">
+
+    <div class="col-md-8">
+        <input type="text"
+               name="tuKhoa"
+               value="@ViewBag.TuKhoa"
+               class="form-control"
+               placeholder="Tìm theo mã hoặc tên kỹ năng..." />
+    </div>
+
+    <div class="col-md-2">
+        <button type="submit"
+                class="btn btn-primary w-100">
+            Tìm kiếm
+        </button>
+    </div>
+
+    <div class="col-md-2">
+        <a asp-controller="Skill"
+           asp-action="Index"
+           class="btn btn-secondary w-100">
+            Làm mới
+        </a>
+    </div>
+
+</form>
+
+            <p>
+                <a asp-action="Create" class="btn btn-success">
+                    + Thêm kỹ năng
+                </a>
+            </p>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã kỹ năng</th>
+                            <th>Tên kỹ năng</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var kyNang in Model)
+                            {
+                                <tr>
+                                    <td>@kyNang.MaKyNang</td>
+                                    <td>@kyNang.TenKyNang</td>
+                                    <td>
+                                        <a asp-action="Edit"
+                                           asp-route-id="@kyNang.MaKyNang"
+                                           class="btn btn-warning btn-sm">
+                                            Sửa
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@kyNang.MaKyNang"
+                                           class="btn btn-danger btn-sm">
+                                            Xóa
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center">
+                                    Chưa có kỹ năng nào.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>

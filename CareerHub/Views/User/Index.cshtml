@@ -1,0 +1,286 @@
+﻿@model IEnumerable<CareerHub.Models.Nguoidung>
+
+@{
+    ViewData["Title"] = "Quản lý tài khoản";
+}
+
+<div class="container-fluid py-4">
+
+    <h2 class="mb-4">Quản lý tài khoản người dùng</h2>
+
+    <div id="thongBao" class="alert d-none"></div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-primary text-white">
+            Danh sách tài khoản
+        </div>
+
+        <div class="card-body">
+        <!-- Form tìm kiếm và lọc tài khoản -->
+<form asp-controller="User"
+      asp-action="Index"
+      method="get"
+      class="row g-3 mb-4">
+
+    <div class="col-md-6">
+        <input type="text"
+               name="tuKhoa"
+               value="@ViewBag.TuKhoa"
+               class="form-control"
+               placeholder="Tìm theo họ tên hoặc email..." />
+    </div>
+
+    <div class="col-md-3">
+        <select name="trangThai"
+                class="form-select">
+
+            <option value=""
+                    selected="@(ViewBag.TrangThai == null ? "selected" : null)">
+                Tất cả tài khoản
+            </option>
+
+            <option value="true"
+                    selected="@(ViewBag.TrangThai == "true" ? "selected" : null)">
+                Đang hoạt động
+            </option>
+
+            <option value="false"
+                    selected="@(ViewBag.TrangThai == "false" ? "selected" : null)">
+                Đã khóa
+            </option>
+
+        </select>
+    </div>
+
+    <div class="col-md-1">
+        <button type="submit"
+                class="btn btn-primary w-100">
+            Tìm
+        </button>
+    </div>
+
+    <div class="col-md-2">
+        <a asp-controller="User"
+           asp-action="Index"
+           class="btn btn-secondary w-100">
+            Làm mới
+        </a>
+    </div>
+
+</form>
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã người dùng</th>
+                            <th>Họ tên</th>
+                            <th>Email</th>
+                            <th>Điện thoại</th>
+                            <th>Vai trò</th>
+                            <th>Ngày tạo</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var nguoiDung in Model)
+                            {
+                                <tr id="row-@nguoiDung.MaNguoiDung">
+
+                                    <td>@nguoiDung.MaNguoiDung</td>
+
+                                    <td>@nguoiDung.HoTen</td>
+
+                                    <td>@nguoiDung.Email</td>
+
+                                    <td>@nguoiDung.DienThoai</td>
+
+                                    <td>@nguoiDung.MaVaiTro</td>
+
+                                    <td>
+                                        @(nguoiDung.NgayTao?.ToString("dd/MM/yyyy") ?? "")
+                                    </td>
+
+                                    <td>
+                                        @if (nguoiDung.TrangThai == true)
+                                        {
+                                            <span class="badge bg-success status-badge">
+                                                Đang hoạt động
+                                            </span>
+                                        }
+                                        else if (nguoiDung.TrangThai == false)
+                                        {
+                                            <span class="badge bg-danger status-badge">
+                                                Đã khóa
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary status-badge">
+                                                Chưa xác định
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (nguoiDung.TrangThai == true)
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-danger btn-sm btn-cap-nhat"
+                                                    data-id="@nguoiDung.MaNguoiDung"
+                                                    data-trang-thai="false">
+                                                Khóa
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-success btn-sm btn-cap-nhat"
+                                                    data-id="@nguoiDung.MaNguoiDung"
+                                                    data-trang-thai="true">
+                                                Mở khóa
+                                            </button>
+                                        }
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center">
+                                    Chưa có tài khoản người dùng.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<form id="formToken">
+    @Html.AntiForgeryToken()
+</form>
+
+<script>
+    document.querySelectorAll(".btn-cap-nhat").forEach(function (button) {
+
+        button.addEventListener("click", async function () {
+
+            const maNguoiDung = this.dataset.id;
+            const trangThai = this.dataset.trangThai === "true";
+
+            const xacNhan = confirm(
+                trangThai
+                    ? "Bạn có muốn mở khóa tài khoản này không?"
+                    : "Bạn có muốn khóa tài khoản này không?"
+            );
+
+            if (!xacNhan) {
+                return;
+            }
+
+            const token = document.querySelector(
+                'input[name="__RequestVerificationToken"]'
+            ).value;
+
+            const formData = new URLSearchParams();
+
+            formData.append("maNguoiDung", maNguoiDung);
+            formData.append("trangThai", trangThai);
+            formData.append("__RequestVerificationToken", token);
+
+            try {
+                const response = await fetch(
+                    "/User/CapNhatTrangThai",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type":
+                                "application/x-www-form-urlencoded"
+                        },
+                        body: formData
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error("Không thể cập nhật tài khoản.");
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+
+                    const row = document.getElementById(
+                        "row-" + maNguoiDung
+                    );
+
+                    const badge = row.querySelector(".status-badge");
+
+                    const button = row.querySelector(".btn-cap-nhat");
+
+                    if (data.trangThai) {
+
+                        badge.textContent = "Đang hoạt động";
+                        badge.className = "badge bg-success status-badge";
+
+                        button.textContent = "Khóa";
+                        button.className = "btn btn-danger btn-sm btn-cap-nhat";
+                        button.dataset.trangThai = "false";
+
+                    } else {
+
+                        badge.textContent = "Đã khóa";
+                        badge.className = "badge bg-danger status-badge";
+
+                        button.textContent = "Mở khóa";
+                        button.className = "btn btn-success btn-sm btn-cap-nhat";
+                        button.dataset.trangThai = "true";
+
+                    }
+
+                    hienThongBao(data.message, "success");
+
+                } else {
+
+                    hienThongBao(data.message, "danger");
+
+                }
+
+            } catch (error) {
+
+                hienThongBao(error.message, "danger");
+
+            }
+
+        });
+
+    });
+
+    function hienThongBao(message, loai) {
+
+        const thongBao = document.getElementById("thongBao");
+
+        thongBao.textContent = message;
+
+        thongBao.className = "alert alert-" + loai;
+
+    }
+</script>
