@@ -1,0 +1,120 @@
+@model IEnumerable<CareerHub.Models.Hosocv>
+
+@{
+    ViewData["Title"] = "Quản lý CV của tôi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-xxl py-5">
+    <div class="container">
+        <!-- TIÊU ĐỀ TRANG -->
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-6 mb-2">Hồ Sơ CV Của Tôi</h1>
+                <p class="text-muted">Tải lên và quản lý các bản CV để sử dụng ứng tuyển việc làm nhanh chóng</p>
+            </div>
+        </div>
+
+        <!-- THÔNG BÁO ALERT NẾU CÓ -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fa fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fa fa-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="row g-4">
+            <!-- CỘT TRÁI: FORM TẢI LÊN CV MỚI -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm p-4">
+                    <h5 class="card-title text-primary mb-3">
+                        <i class="fa fa-cloud-upload-alt me-2"></i>Tải lên CV mới
+                    </h5>
+                    <form asp-action="UploadCV" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Tên gọi nhớ cho CV</label>
+                            <input type="text" name="tenCv" class="form-control" placeholder="VD: CV Lập trình Web C# 2026" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Chọn file CV (.pdf, .doc, .docx)</label>
+                            <input type="file" name="fileCv" class="form-control" accept=".pdf,.doc,.docx" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2">
+                            <i class="fa fa-upload me-2"></i>Tải lên hồ sơ
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- CỘT PHẢI: BẢNG DANH SÁCH CV ĐÃ TẢI LÊN -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm p-4">
+                    <h5 class="card-title text-dark mb-3">
+                        <i class="fa fa-file-alt me-2 text-primary"></i>Danh sách CV hiện có (@Model.Count())
+                    </h5>
+
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center py-5 text-muted">
+                            <i class="fa fa-folder-open fa-3x mb-3 text-secondary"></i>
+                            <p>Bạn chưa tải lên bản CV nào. Hãy dùng form bên cạnh để tải lên!</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Tên CV</th>
+                                        <th>Ngày cập nhật</th>
+                                        <th class="text-center" style="width: 140px;">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var cv in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <i class="far fa-file-pdf text-danger fa-lg me-2"></i>
+                                                <span class="fw-semibold">@cv.TenCv</span>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">
+                                                    @(cv.NgayCapNhat.HasValue ? cv.NgayCapNhat.Value.ToString("dd/MM/yyyy HH:mm") : "-")
+                                                </small>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="@cv.DuongDanFile" target="_blank" class="btn btn-outline-info" title="Xem CV">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                    <form asp-action="DeleteCV" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa CV này?');" style="display:inline;">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="id" value="@cv.MaCv" />
+                                                        <button type="submit" class="btn btn-outline-danger" title="Xóa CV">
+                                                            <i class="fa fa-trash-alt"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,5 +1,138 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-    Layout = "~/Views/Shared/_layout.cshtml";
+﻿@model IEnumerable<CareerHub.Models.Danhmuc>
+
+@{
+    ViewData["Title"] = "Trang chủ - Tìm việc làm nhanh";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
- 
+
+<!-- KHU VỰC AJAX: LỌC VIỆC LÀM THEO NGÀNH NGHỀ -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <h1 class="text-center mb-3">Việc Làm Theo Ngành Nghề</h1>
+        <p class="text-center text-muted mb-4">Bấm vào ngành bất kỳ để xem danh sách việc làm (sử dụng AJAX không tải lại trang)</p>
+
+        <!-- 1. DUYỆT DANH SÁCH DANH MỤC TẠO CÁC NÚT BẤM -->
+        <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+            @foreach (var item in Model)
+            {
+                <button type="button" class="btn btn-outline-primary px-4 py-2 fw-semibold"
+                        style="cursor:pointer"
+                        onclick="loadViecLam('@item.MaDanhMuc', this)">
+                    @item.TenDanhMuc
+                </button>
+            }
+        </div>
+
+        <!-- 2. NƠI CHỨA KẾT QUẢ ĐỔ AJAX VÀO (id="dsViecLam") -->
+        <div id="dsViecLam" class="row">
+            <div class="text-center py-5 text-muted">
+                <i class="fa fa-hand-pointer fa-3x mb-3 text-primary"></i>
+                <h5>Hãy bấm vào một ngành nghề ở trên để xem việc làm!</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. ĐOẠN JQUERY AJAX CHUẨN ĐÚNG KIỂU BÀI THI -->
+@section Scripts {
+    <script>
+        function loadViecLam(maDanhMuc, btn) {
+            $('.btn-outline-primary').removeClass('btn-primary text-white').addClass('btn-outline-primary');
+            $(btn).removeClass('btn-outline-primary').addClass('btn-primary text-white');
+
+            $.ajax({
+                url: '/api/jobapi/' + encodeURIComponent(maDanhMuc),
+                type: 'GET',
+                success: function (data) {
+                    var html = '';
+
+                    if (!data || data.length === 0) {
+                        html = '<div class="text-center py-4 text-muted"><h5>Ngành này hiện chưa có việc làm nào.</h5></div>';
+                    } else {
+                        data.forEach(function (item) {
+                            var heartClass = item.isSaved ? 'fas fa-heart text-danger' : 'far fa-heart';
+                            var btnHeartClass = item.isSaved ? 'btn-danger text-white' : 'btn-outline-danger';
+
+                            html += `
+                                <div class="col-lg-6 mb-3">
+                                    <div class="job-item p-4 border rounded shadow-sm h-100">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div>
+                                                <h5 class="mb-1 text-primary fw-bold">${item.tieuDe}</h5>
+                                                <span class="text-muted me-3">
+                                                    <i class="fa fa-building me-1"></i>${item.tenCongTy}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <span class="text-truncate me-3">
+                                                <i class="fa fa-map-marker-alt text-primary me-1"></i>${item.diaDiem}
+                                            </span>
+                                            <span class="text-truncate me-3">
+                                                <i class="far fa-clock text-primary me-1"></i>${item.loaiHinh}
+                                            </span>
+                                            <span class="text-truncate text-danger fw-bold">
+                                                <i class="far fa-money-bill-alt text-primary me-1"></i>${item.mucLuong}
+                                            </span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">
+                                                <i class="fa fa-user-tie me-1"></i>${item.kinhNghiem}
+                                            </small>
+                                            <div>
+                                                <button class="btn ${btnHeartClass} btn-sm me-1" onclick="toggleSaveJob(${item.maTin}, this)" title="Lưu việc làm">
+                                                    <i class="${heartClass}"></i>
+                                                </button>
+                                                <button class="btn btn-primary btn-sm" onclick="openApplyModal(${item.maTin})">
+                                                    <i class="fa fa-paper-plane me-1"></i>Ứng tuyển
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2">
+                                            <small class="text-muted">
+                                                <i class="far fa-calendar-alt me-1"></i>Hạn nộp: ${item.hanNop}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    $('#dsViecLam').html(html);
+                },
+                error: function (err) {
+                    alert('Lỗi tải dữ liệu AJAX!');
+                }
+            });
+        }
+
+        // AJAX POST Thả tim / Bỏ tim việc làm
+        function toggleSaveJob(maTin, btn) {
+            $.ajax({
+                url: '/api/jobapi/toggle-save/' + maTin,
+                type: 'POST',
+                success: function (res) {
+                    if (res.success) {
+                        var icon = $(btn).find('i');
+                        if (res.isSaved) {
+                            icon.removeClass('far fa-heart').addClass('fas fa-heart text-danger');
+                            $(btn).removeClass('btn-outline-danger').addClass('btn-danger text-white');
+                        } else {
+                            icon.removeClass('fas fa-heart text-danger').addClass('far fa-heart');
+                            $(btn).removeClass('btn-danger text-white').addClass('btn-outline-danger');
+                        }
+                    }
+                },
+                error: function (xhr) {
+                    if (xhr.status === 401) {
+                        alert('Vui lòng đăng nhập với vai trò Ứng viên để lưu việc làm!');
+                        window.location.href = '/Account/Login';
+                    } else {
+                        alert('Không thể lưu việc làm. Vui lòng thử lại!');
+                    }
+                }
+            });
+        }
+    </script>
+}

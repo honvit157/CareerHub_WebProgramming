@@ -1,0 +1,53 @@
+﻿@model CareerHub.Models.ModelViews.LoginViewModel
+
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h4 class="mb-0 text-white fw-bold">ĐĂNG NHẬP HỆ THỐNG</h4>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Hiển thị thông báo lỗi nếu nhập sai tài khoản/mật khẩu -->
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <form asp-controller="Account" asp-action="Login" method="post">
+                        <!-- Ô nhập Email -->
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-semibold">Địa chỉ Email</label>
+                            <input asp-for="Email" class="form-control" placeholder="name@example.com" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Ô nhập Mật khẩu -->
+                        <div class="mb-3">
+                            <label asp-for="MatKhau" class="form-label fw-semibold">Mật khẩu</label>
+                            <input asp-for="MatKhau" type="password" class="form-control" placeholder="••••••••" />
+                            <span asp-validation-for="MatKhau" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Nút Ghi nhớ đăng nhập -->
+                        <div class="form-check mb-3">
+                            <input asp-for="GhiNho" class="form-check-input" />
+                            <label asp-for="GhiNho" class="form-check-label">Ghi nhớ đăng nhập</label>
+                        </div>
+
+                        <!-- Nút bấm Đăng nhập -->
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Đăng nhập</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Thư viện tự động kiểm tra lỗi trực tiếp trên trình duyệt mà không cần tải lại trang -->
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

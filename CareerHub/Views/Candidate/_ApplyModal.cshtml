@@ -1,0 +1,138 @@
+﻿@model CareerHub.Models.ViewModels.ApplyJobViewModel
+
+<div class="modal fade" id="applyJobModal" tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <div>
+                    <h5 class="modal-header-title text-white mb-0" id="applyModalLabel">
+                        <i class="fa fa-paper-plane me-2"></i>Ứng tuyển công việc
+                    </h5>
+                    <small class="text-white-50">@Model.TieuDeTin - @Model.TenCongTy</small>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form asp-controller="Candidate" asp-action="Apply" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="MaTin" />
+
+                <div class="modal-body p-4">
+                    <label class="form-label fw-bold mb-3">Chọn hình thức nộp hồ sơ ứng tuyển:</label>
+
+                    <!-- LỰA CHỌN 1: DÙNG HỒ SƠ / CV CÓ SẴN -->
+                    <div class="card p-3 mb-3 border">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="KieuNop" id="optCoSan" value="CoSan" 
+                                   @(Model.DanhSachCvCoSan != null && Model.DanhSachCvCoSan.Any() ? "checked" : "disabled")
+                                   onchange="switchApplyType()">
+                            <label class="form-check-label fw-bold" for="optCoSan">
+                                1. Dùng Hồ sơ trực tuyến / CV đã có sẵn trên tài khoản
+                            </label>
+                        </div>
+
+                        <div id="sectionCoSan" class="mt-2 ms-4">
+                            @if (Model.DanhSachCvCoSan != null && Model.DanhSachCvCoSan.Any())
+                            {
+                                <select asp-for="MaCvCoSan" class="form-select">
+                                    @foreach (var cv in Model.DanhSachCvCoSan)
+                                    {
+                                        <option value="@cv.MaCv">@cv.TenCv (Cập nhật: @(cv.NgayCapNhat?.ToString("dd/MM/yyyy") ?? ""))</option>
+                                    }
+                                </select>
+                            }
+                            else
+                            {
+                                <p class="text-muted small mb-0 mt-1">
+                                    <i class="fa fa-info-circle me-1"></i>Bạn chưa có hồ sơ nào. Hãy chọn mục 2 để tải file hoặc mục 3 để nhập tay nhanh!
+                                </p>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- LỰA CHỌN 2: TẢI LÊN FILE CV MỚI (PDF/WORD) -->
+                    <div class="card p-3 mb-3 border">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="KieuNop" id="optTaiMoi" value="TaiMoi" 
+                                   @(Model.DanhSachCvCoSan == null || !Model.DanhSachCvCoSan.Any() ? "checked" : "")
+                                   onchange="switchApplyType()">
+                            <label class="form-check-label fw-bold" for="optTaiMoi">
+                                2. Tải file CV mới từ máy tính (PDF, Word)
+                            </label>
+                        </div>
+
+                        <div id="sectionTaiMoi" class="mt-2 ms-4">
+                            <div class="mb-2">
+                                <label class="form-label small text-muted">Tên hồ sơ:</label>
+                                <input asp-for="TenCvMoi" class="form-control form-control-sm" placeholder="VD: CV Lập trình viên C# 2026" />
+                            </div>
+                            <div>
+                                <label class="form-label small text-muted">File đính kèm:</label>
+                                <input asp-for="FileCvMoi" type="file" class="form-control form-control-sm" accept=".pdf,.doc,.docx" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LỰA CHỌN 3: NHẬP TAY TRỰC TIẾP (GIẢI PHÁP 2) -->
+                    <div class="card p-3 mb-3 border">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="KieuNop" id="optNhapTay" value="NhapTay"
+                                   onchange="switchApplyType()">
+                            <label class="form-check-label fw-bold text-success" for="optNhapTay">
+                                3. Nhập tay trực tiếp (Ứng tuyển nhanh không cần file CV)
+                            </label>
+                        </div>
+
+                        <div id="sectionNhapTay" class="mt-2 ms-4" style="display: none;">
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Học vấn cao nhất:</label>
+                                <input asp-for="HocVanNhapTay" class="form-control form-control-sm" placeholder="VD: Đại học GTVT - Chuyên ngành CNTT" />
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Kinh nghiệm làm việc tóm tắt:</label>
+                                <textarea asp-for="KinhNghiemNhapTay" class="form-control form-control-sm" rows="2" placeholder="VD: 1 năm làm C#, thực tập sinh ASP.NET..."></textarea>
+                            </div>
+                            <div>
+                                <label class="form-label small fw-semibold">Kỹ năng chính:</label>
+                                <input asp-for="KyNangNhapTay" class="form-control form-control-sm" placeholder="VD: C#, SQL Server, MVC, HTML/CSS..." />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- THƯ GIỚI THIỆU -->
+                    <div class="mb-3">
+                        <label asp-for="ThuGioiThieu" class="form-label fw-bold">Lời nhắn gửi nhà tuyển dụng (Tùy chọn):</label>
+                        <textarea asp-for="ThuGioiThieu" class="form-control" rows="2" 
+                                  placeholder="Ghi ngắn gọn lý do bạn phù hợp với công việc này..."></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary px-4 fw-bold">
+                        <i class="fa fa-paper-plane me-1"></i>Nộp hồ sơ ngay
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchApplyType() {
+        var isCoSan = document.getElementById("optCoSan") && document.getElementById("optCoSan").checked;
+        var isTaiMoi = document.getElementById("optTaiMoi") && document.getElementById("optTaiMoi").checked;
+        var isNhapTay = document.getElementById("optNhapTay") && document.getElementById("optNhapTay").checked;
+
+        var secCoSan = document.getElementById("sectionCoSan");
+        var secTaiMoi = document.getElementById("sectionTaiMoi");
+        var secNhapTay = document.getElementById("sectionNhapTay");
+
+        if (secCoSan) secCoSan.style.display = isCoSan ? "block" : "none";
+        if (secTaiMoi) secTaiMoi.style.display = isTaiMoi ? "block" : "none";
+        if (secNhapTay) secNhapTay.style.display = isNhapTay ? "block" : "none";
+    }
+
+    // Chạy khởi tạo lúc mở modal
+    switchApplyType();
+</script>

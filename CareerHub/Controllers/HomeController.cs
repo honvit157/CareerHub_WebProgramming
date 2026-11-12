@@ -1,14 +1,25 @@
 using CareerHub.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace CareerHub.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly CareerHubContext _context;
+
+        // Tiêm DbContext vào để lấy dữ liệu từ CSDL
+        public HomeController(CareerHubContext context)
         {
-            return View();
+            _context = context;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            // Lấy danh sách Danh mục ngành nghề từ CSDL truyền xuống View
+            var danhMucList = await _context.Danhmucs.ToListAsync();
+            return View(danhMucList);
         }
 
         public IActionResult Privacy()
