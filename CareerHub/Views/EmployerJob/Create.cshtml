@@ -1,0 +1,17 @@
+﻿@model CareerHub.ViewModels.JobFormVm
+@{
+    ViewData["Title"] = "Đăng tin tuyển dụng mới";
+}
+
+<div class="container-xxl py-5">
+    <div class="container">
+        <h1 class="text-center mb-5">Đăng tin tuyển dụng mới</h1>
+        <form asp-action="Create" method="post">
+            <partial name="_JobForm" model="Model" />
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary px-5">Đăng tin</button>
+                <a asp-action="Index" class="btn btn-light">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
