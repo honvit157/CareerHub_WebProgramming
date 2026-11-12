@@ -1,41 +1,29 @@
-﻿
-@model CareerHub.Models.Tintuyendung
+﻿@model CareerHub.Models.Tintuyendung
 
 @{
-    ViewData["Title"] = "Job Details";
-
+    ViewData["Title"] = "Chi tiết việc làm - " + Model.TieuDe;
     var company = Model.MaCongTyNavigation;
 
-    var logo = string.IsNullOrWhiteSpace(company?.Logo)
-        ? "com-logo-1.jpg"
-        : company.Logo.Replace("\\", "/").Split('/').Last();
-
-    string salary = "Negotiable";
-
+    string salary = "Thỏa thuận";
     if (Model.LuongTu.HasValue && Model.LuongDen.HasValue)
     {
-        salary = $"{Model.LuongTu.Value:N0} - {Model.LuongDen.Value:N0} VND";
+        salary = $"{Model.LuongTu.Value:N0} - {Model.LuongDen.Value:N0} VNĐ";
     }
     else if (Model.LuongTu.HasValue)
     {
-        salary = $"From {Model.LuongTu.Value:N0} VND";
+        salary = $"Từ {Model.LuongTu.Value:N0} VNĐ";
     }
     else if (Model.LuongDen.HasValue)
     {
-        salary = $"Up to {Model.LuongDen.Value:N0} VND";
+        salary = $"Lên đến {Model.LuongDen.Value:N0} VNĐ";
     }
 }
 
 <!-- Page Header Start -->
 <div class="container-fluid bg-primary mb-5">
     <div class="container py-5">
-        <h1 class="display-5 text-white mb-3">
-            Job Details
-        </h1>
-
-        <p class="text-white mb-0">
-            Recruitment information and career opportunities at CareerHub.
-        </p>
+        <h1 class="display-5 text-white mb-3">Chi Tiết Việc Làm</h1>
+        <p class="text-white mb-0">Thông tin tuyển dụng chi tiết và cơ hội phát triển nghề nghiệp tại CareerHub.</p>
     </div>
 </div>
 <!-- Page Header End -->
@@ -43,154 +31,92 @@
 <div class="container-xxl py-5">
     <div class="container">
         <div class="row g-4">
-
             <!-- LEFT COLUMN -->
             <div class="col-lg-8">
-
-                <div class="job-detail-card bg-light rounded p-4 p-md-5 mb-4">
-
+                <div class="job-detail-card bg-light rounded p-4 p-md-5 mb-4 shadow-sm">
                     <div class="d-flex flex-wrap align-items-center mb-4">
-
-                        <img src="@Url.Content("~/Template/img/" + logo)"
-                             alt="Company logo"
-                             class="img-fluid border rounded me-4 mb-3"
-                             style="width:90px;height:90px;object-fit:contain;"
-                             onerror="this.onerror=null;this.src='/Template/img/com-logo-1.jpg';" />
-
                         <div>
-                            <h2 class="mb-2">
-                                @Model.TieuDe
-                            </h2>
-
-                            <h5 class="text-primary mb-2">
-                                @(company?.TenCongTy ?? "Company not specified")
+                            <h2 class="mb-2 text-primary fw-bold">@Model.TieuDe</h2>
+                            <h5 class="text-dark mb-2">
+                                <i class="fa fa-building text-primary me-2"></i>@(company?.TenCongTy ?? "Chưa cập nhật tên công ty")
                             </h5>
-
                             <span class="text-muted me-3">
-                                <i class="fa fa-map-marker-alt text-primary me-2"></i>
-                                @(Model.DiaChiLamViec ?? "Not specified")
+                                <i class="fa fa-map-marker-alt text-primary me-2"></i>@(Model.DiaChiLamViec ?? "Toàn quốc")
                             </span>
-
                             <span class="text-muted">
-                                <i class="far fa-clock text-primary me-2"></i>
-                                @(Model.LoaiHinh ?? "Not specified")
+                                <i class="far fa-clock text-primary me-2"></i>@(Model.LoaiHinh ?? "Toàn thời gian")
                             </span>
                         </div>
                     </div>
 
                     <div class="row g-3 border-top pt-4">
-
                         <div class="col-md-4">
-                            <small class="text-muted d-block">
-                                Salary
-                            </small>
-                            <strong>@salary</strong>
+                            <small class="text-muted d-block">Mức lương</small>
+                            <strong class="text-danger fs-5">@salary</strong>
                         </div>
-
                         <div class="col-md-4">
-                            <small class="text-muted d-block">
-                                Experience
-                            </small>
-                            <strong>
-                                @(Model.KinhNghiem ?? "Not required")
-                            </strong>
+                            <small class="text-muted d-block">Kinh nghiệm</small>
+                            <strong>@(Model.KinhNghiem ?? "Không yêu cầu")</strong>
                         </div>
-
                         <div class="col-md-4">
-                            <small class="text-muted d-block">
-                                Application Deadline
-                            </small>
-                            <strong>
-                                @(Model.HanNop?.ToString("dd/MM/yyyy")
-                                    ?? "Not specified")
-                            </strong>
+                            <small class="text-muted d-block">Hạn nộp hồ sơ</small>
+                            <strong>@(Model.HanNop?.ToString("dd/MM/yyyy") ?? "Không giới hạn")</strong>
                         </div>
-
                     </div>
                 </div>
 
-                <div class="job-detail-card bg-light rounded p-4 mb-4">
-                    <h4 class="mb-3">Job Description</h4>
-
-                    <p style="white-space:pre-line;">
-                        @(Model.MoTaCv ?? "No description available.")
+                <div class="job-detail-card bg-light rounded p-4 mb-4 shadow-sm">
+                    <h4 class="mb-3 text-dark fw-bold"><i class="fa fa-file-alt text-primary me-2"></i>Mô tả công việc</h4>
+                    <p style="white-space:pre-line;" class="text-secondary">
+                        @(Model.MoTaCv ?? "Đang cập nhật mô tả công việc...")
                     </p>
                 </div>
 
-                <div class="job-detail-card bg-light rounded p-4 mb-4">
-                    <h4 class="mb-3">Job Requirements</h4>
-
-                    <p class="mb-0" style="white-space:pre-line;">
-                        @(Model.YeuCau ?? "No requirements available.")
+                <div class="job-detail-card bg-light rounded p-4 mb-4 shadow-sm">
+                    <h4 class="mb-3 text-dark fw-bold"><i class="fa fa-check-circle text-primary me-2"></i>Yêu cầu ứng viên</h4>
+                    <p class="mb-0 text-secondary" style="white-space:pre-line;">
+                        @(Model.YeuCau ?? "Đang cập nhật yêu cầu công việc...")
                     </p>
                 </div>
 
-                <div class="job-detail-card bg-light rounded p-4 mb-4">
-                    <h4 class="mb-3">Benefits</h4>
-
-                    <p class="mb-0" style="white-space:pre-line;">
-                        @(Model.QuyenLoi ?? "No benefits specified.")
+                <div class="job-detail-card bg-light rounded p-4 mb-4 shadow-sm">
+                    <h4 class="mb-3 text-dark fw-bold"><i class="fa fa-gift text-primary me-2"></i>Quyền lợi được hưởng</h4>
+                    <p class="mb-0 text-secondary" style="white-space:pre-line;">
+                        @(Model.QuyenLoi ?? "Đang cập nhật quyền lợi chế độ đãi ngộ...")
                     </p>
                 </div>
-
             </div>
 
             <!-- RIGHT COLUMN -->
             <div class="col-lg-4">
-
-                <div class="job-detail-card bg-light rounded p-4 mb-4">
-
-                    <h4 class="mb-3">Company Information</h4>
-
-                    <h5>
-                        @(company?.TenCongTy ?? "Company not specified")
-                    </h5>
-
+                <div class="job-detail-card bg-light rounded p-4 mb-4 shadow-sm">
+                    <h4 class="mb-3 text-dark fw-bold"><i class="fa fa-info-circle text-primary me-2"></i>Thông tin công ty</h4>
+                    <h5 class="text-primary fw-bold">@(company?.TenCongTy ?? "Chưa cập nhật")</h5>
                     <p class="text-muted" style="white-space:pre-line;">
-                        @(company?.MoTa ?? "No company description available.")
+                        @(company?.MoTa ?? "Thông tin công ty đang được cập nhật.")
                     </p>
-
-                    <p class="mb-2">
-                        <i class="fa fa-map-marker-alt text-primary me-2"></i>
-                        @(company?.DiaChi ?? "Address not specified")
+                    <p class="mb-2 text-muted">
+                        <i class="fa fa-map-marker-alt text-primary me-2"></i>@(company?.DiaChi ?? "Chưa cập nhật địa chỉ")
                     </p>
-
                     @if (!string.IsNullOrWhiteSpace(company?.Website))
                     {
                         <p class="mb-0">
                             <i class="fa fa-globe text-primary me-2"></i>
-
-                            <a href="@company.Website"
-                               target="_blank"
-                               rel="noopener noreferrer">
-                                Company Website
-                            </a>
+                            <a href="@company.Website" target="_blank" rel="noopener noreferrer">Website công ty</a>
                         </p>
                     }
-
                 </div>
 
-                <div class="job-detail-card bg-light rounded p-4">
-
-                    <h4 class="mb-3">Apply for This Job</h4>
-
-                    <p>
-                        Prepare your CV to apply for this position.
-                    </p>
-
-                    <a href="#"
-                       class="btn btn-primary w-100">
-                        Apply Now
+                <div class="job-detail-card bg-light rounded p-4 shadow-sm">
+                    <h4 class="mb-3 text-dark fw-bold"><i class="fa fa-paper-plane text-primary me-2"></i>Ứng tuyển công việc</h4>
+                    <p class="text-muted small">Nộp hồ sơ ngay để không bỏ lỡ cơ hội việc làm hấp dẫn này.</p>
+                    <button type="button" class="btn btn-primary w-100 py-3 fw-bold mb-2 shadow-sm" onclick="openApplyModal(@Model.MaTin)">
+                        <i class="fa fa-paper-plane me-2"></i>Ứng tuyển ngay
+                    </button>
+                    <a asp-controller="Jobs" asp-action="Index" class="btn btn-outline-secondary w-100 py-2">
+                        <i class="fa fa-arrow-left me-2"></i>Quay lại danh sách
                     </a>
-
-                    <a asp-controller="Jobs"
-                       asp-action="Index"
-                       class="btn btn-outline-primary w-100 mt-2">
-                        Back to Job List
-                    </a>
-
                 </div>
-
             </div>
         </div>
     </div>

@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CareerHub.Models;
 
 namespace CareerHub.Controllers
 {
+    [Authorize(Roles = "Quản trị viên,Admin")]
     public class AdminController : Controller
     {
         private readonly CareerHubContext db;

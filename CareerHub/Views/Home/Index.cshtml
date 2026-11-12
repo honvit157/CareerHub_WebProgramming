@@ -1,138 +1,104 @@
-﻿@model IEnumerable<CareerHub.Models.Danhmuc>
+﻿@model IEnumerable<CareerHub.Models.Tintuyendung>
 
 @{
-    ViewData["Title"] = "Trang chủ - Tìm việc làm nhanh";
+    ViewData["Title"] = "Trang chủ - Cổng thông tin việc làm CareerHub";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!-- KHU VỰC AJAX: LỌC VIỆC LÀM THEO NGÀNH NGHỀ -->
-<div class="container-xxl py-5">
+<!-- BANNER TÌM KIẾM HERO SECTION -->
+<div class="container-fluid bg-primary mb-5 wow fadeIn" data-wow-delay="0.1s" style="padding: 35px;">
     <div class="container">
-        <h1 class="text-center mb-3">Việc Làm Theo Ngành Nghề</h1>
-        <p class="text-center text-muted mb-4">Bấm vào ngành bất kỳ để xem danh sách việc làm (sử dụng AJAX không tải lại trang)</p>
-
-        <!-- 1. DUYỆT DANH SÁCH DANH MỤC TẠO CÁC NÚT BẤM -->
-        <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
-            @foreach (var item in Model)
-            {
-                <button type="button" class="btn btn-outline-primary px-4 py-2 fw-semibold"
-                        style="cursor:pointer"
-                        onclick="loadViecLam('@item.MaDanhMuc', this)">
-                    @item.TenDanhMuc
-                </button>
-            }
-        </div>
-
-        <!-- 2. NƠI CHỨA KẾT QUẢ ĐỔ AJAX VÀO (id="dsViecLam") -->
-        <div id="dsViecLam" class="row">
-            <div class="text-center py-5 text-muted">
-                <i class="fa fa-hand-pointer fa-3x mb-3 text-primary"></i>
-                <h5>Hãy bấm vào một ngành nghề ở trên để xem việc làm!</h5>
+        <div class="row g-2 align-items-center">
+            <div class="col-md-10">
+                <form asp-controller="Jobs" asp-action="Index" method="get" class="row g-2">
+                    <div class="col-md-8">
+                        <input type="text" name="keyword" class="form-control border-0 py-3" placeholder="Nhập chức danh công việc, tên công ty..." />
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-dark border-0 w-100 py-3">
+                            <i class="fa fa-search me-2"></i>Tìm kiếm việc làm
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-2">
+                <a asp-controller="Home" asp-action="FilterByCategory" class="btn btn-outline-light border-2 w-100 py-3">
+                    <i class="fa fa-th-large me-1"></i>Việc theo ngành
+                </a>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 3. ĐOẠN JQUERY AJAX CHUẨN ĐÚNG KIỂU BÀI THI -->
-@section Scripts {
-    <script>
-        function loadViecLam(maDanhMuc, btn) {
-            $('.btn-outline-primary').removeClass('btn-primary text-white').addClass('btn-outline-primary');
-            $(btn).removeClass('btn-outline-primary').addClass('btn-primary text-white');
+<!-- DANH SÁCH VIỆC LÀM MỚI NHẤT -->
+<div class="container-xxl py-4">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">Cơ Hội Việc Làm Mới Nhất</h2>
+                <p class="text-muted mb-0">Khám phá các vị trí tuyển dụng hấp dẫn từ những nhà tuyển dụng hàng đầu</p>
+            </div>
+            <a asp-controller="Jobs" asp-action="Index" class="btn btn-outline-primary px-4">
+                Xem tất cả việc làm <i class="fa fa-arrow-right ms-2"></i>
+            </a>
+        </div>
 
-            $.ajax({
-                url: '/api/jobapi/' + encodeURIComponent(maDanhMuc),
-                type: 'GET',
-                success: function (data) {
-                    var html = '';
-
-                    if (!data || data.length === 0) {
-                        html = '<div class="text-center py-4 text-muted"><h5>Ngành này hiện chưa có việc làm nào.</h5></div>';
-                    } else {
-                        data.forEach(function (item) {
-                            var heartClass = item.isSaved ? 'fas fa-heart text-danger' : 'far fa-heart';
-                            var btnHeartClass = item.isSaved ? 'btn-danger text-white' : 'btn-outline-danger';
-
-                            html += `
-                                <div class="col-lg-6 mb-3">
-                                    <div class="job-item p-4 border rounded shadow-sm h-100">
-                                        <div class="d-flex align-items-center mb-3">
-                                            <div>
-                                                <h5 class="mb-1 text-primary fw-bold">${item.tieuDe}</h5>
-                                                <span class="text-muted me-3">
-                                                    <i class="fa fa-building me-1"></i>${item.tenCongTy}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <span class="text-truncate me-3">
-                                                <i class="fa fa-map-marker-alt text-primary me-1"></i>${item.diaDiem}
-                                            </span>
-                                            <span class="text-truncate me-3">
-                                                <i class="far fa-clock text-primary me-1"></i>${item.loaiHinh}
-                                            </span>
-                                            <span class="text-truncate text-danger fw-bold">
-                                                <i class="far fa-money-bill-alt text-primary me-1"></i>${item.mucLuong}
-                                            </span>
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted">
-                                                <i class="fa fa-user-tie me-1"></i>${item.kinhNghiem}
-                                            </small>
-                                            <div>
-                                                <button class="btn ${btnHeartClass} btn-sm me-1" onclick="toggleSaveJob(${item.maTin}, this)" title="Lưu việc làm">
-                                                    <i class="${heartClass}"></i>
-                                                </button>
-                                                <button class="btn btn-primary btn-sm" onclick="openApplyModal(${item.maTin})">
-                                                    <i class="fa fa-paper-plane me-1"></i>Ứng tuyển
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="mt-2">
-                                            <small class="text-muted">
-                                                <i class="far fa-calendar-alt me-1"></i>Hạn nộp: ${item.hanNop}
-                                            </small>
-                                        </div>
-                                    </div>
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="fa fa-briefcase fa-3x mb-3 text-secondary"></i>
+                <h5>Hiện chưa có tin tuyển dụng nào được đăng tải.</h5>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var job in Model)
+                {
+                    <div class="col-lg-6">
+                        <div class="job-item p-4 border rounded shadow-sm h-100 bg-white">
+                            <div class="d-flex align-items-center mb-3">
+                                <div>
+                                    <h5 class="mb-1 text-primary fw-bold">@job.TieuDe</h5>
+                                    <span class="text-muted me-3">
+                                        <i class="fa fa-building me-1"></i>@(job.MaCongTyNavigation?.TenCongTy ?? "Công ty tuyển dụng")
+                                    </span>
                                 </div>
-                            `;
-                        });
-                    }
-
-                    $('#dsViecLam').html(html);
-                },
-                error: function (err) {
-                    alert('Lỗi tải dữ liệu AJAX!');
+                            </div>
+                            <div class="mb-3 text-muted">
+                                <span class="me-3">
+                                    <i class="fa fa-map-marker-alt text-primary me-1"></i>@(job.DiaChiLamViec ?? "Toàn quốc")
+                                </span>
+                                <span class="me-3">
+                                    <i class="far fa-clock text-primary me-1"></i>@(job.LoaiHinh ?? "Toàn thời gian")
+                                </span>
+                                <span class="text-danger fw-bold">
+                                    <i class="far fa-money-bill-alt text-primary me-1"></i>
+                                    @(job.LuongTu.HasValue ? $"{(job.LuongTu / 1000000):0.#} - {(job.LuongDen / 1000000):0.#} triệu" : "Thỏa thuận")
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fa fa-user-tie me-1"></i>@(job.KinhNghiem ?? "Không yêu cầu kinh nghiệm")
+                                </small>
+                                <div>
+                                    <a asp-controller="Jobs" asp-action="Details" asp-route-id="@job.MaTin" class="btn btn-outline-info btn-sm me-1">
+                                        <i class="fa fa-eye me-1"></i>Chi tiết
+                                    </a>
+                                    <button class="btn btn-primary btn-sm" onclick="openApplyModal(@job.MaTin)">
+                                        <i class="fa fa-paper-plane me-1"></i>Ứng tuyển
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    <i class="far fa-calendar-alt me-1"></i>Hạn nộp: @(job.HanNop.HasValue ? job.HanNop.Value.ToString("dd/MM/yyyy") : "Không giới hạn")
+                                </small>
+                            </div>
+                        </div>
+                    </div>
                 }
-            });
+            </div>
         }
-
-        // AJAX POST Thả tim / Bỏ tim việc làm
-        function toggleSaveJob(maTin, btn) {
-            $.ajax({
-                url: '/api/jobapi/toggle-save/' + maTin,
-                type: 'POST',
-                success: function (res) {
-                    if (res.success) {
-                        var icon = $(btn).find('i');
-                        if (res.isSaved) {
-                            icon.removeClass('far fa-heart').addClass('fas fa-heart text-danger');
-                            $(btn).removeClass('btn-outline-danger').addClass('btn-danger text-white');
-                        } else {
-                            icon.removeClass('fas fa-heart text-danger').addClass('far fa-heart');
-                            $(btn).removeClass('btn-danger text-white').addClass('btn-outline-danger');
-                        }
-                    }
-                },
-                error: function (xhr) {
-                    if (xhr.status === 401) {
-                        alert('Vui lòng đăng nhập với vai trò Ứng viên để lưu việc làm!');
-                        window.location.href = '/Account/Login';
-                    } else {
-                        alert('Không thể lưu việc làm. Vui lòng thử lại!');
-                    }
-                }
-            });
-        }
-    </script>
-}
+    </div>
+</div>

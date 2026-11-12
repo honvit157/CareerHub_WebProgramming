@@ -12,7 +12,7 @@ namespace CareerHub.Controllers
     /// TV2 - Nhà tuyển dụng: CRUD tin tuyển dụng, xem danh sách ứng viên (ATS),
     /// đổi trạng thái hồ sơ bằng AJAX, xem / tải CV (PDF).
     /// </summary>
-    [Authorize(Roles = "Employer")]
+    [Authorize(Roles = "Employer,Nhà tuyển dụng")]
     public class EmployerJobController : Controller
     {
         private const string StatusPending = "Chờ duyệt";

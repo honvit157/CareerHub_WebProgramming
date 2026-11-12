@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CareerHub.Controllers
 {
     /// <summary>TV2 - Quản lý hồ sơ doanh nghiệp (bảng CONGTY).</summary>
-    [Authorize(Roles = "Employer")]
+    [Authorize(Roles = "Employer,Nhà tuyển dụng")]
     public class CompanyController : Controller
     {
         private readonly CareerHubContext _db;

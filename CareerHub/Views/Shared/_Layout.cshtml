@@ -90,7 +90,7 @@
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <div class="navbar-nav ms-auto p-4 p-lg-0 align-items-center">
                     <a asp-controller="Home" asp-action="Index" class="nav-item nav-link active">Trang chủ</a>
-                    <a asp-controller="Jobs" asp-action="Index" class="nav-item nav-link">Tìm việc làm</a>
+                    <a asp-controller="Home" asp-action="FilterByCategory" class="nav-item nav-link">Việc theo ngành</a>
 
                     @* 1. NẾU NGƯỜI DÙNG ĐÃ ĐĂNG NHẬP THÀNH CÔNG *@
                     @if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -147,7 +147,7 @@
                     }
                 </div>
                 <partial name="~/Views/Notification/_Bell.cshtml" />
-                <a asp-controller="Jobs" asp-action="Index" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Find A Job<i class="fa fa-arrow-right ms-3"></i></a>
+                <a asp-controller="Jobs" asp-action="Index" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Tìm việc làm<i class="fa fa-arrow-right ms-3"></i></a>
             </div>
         </nav>
         <!-- Navbar End -->
@@ -169,70 +169,26 @@
 
                     <!-- Company -->
                     <div class="col-lg-3 col-md-6">
-
-                        <h5 class="text-white mb-4">
-                            CareerHub
-                        </h5>
-
-                        <p>
-                            Find the right job and build
-                            your future career.
-                        </p>
-
-                        <a asp-controller="Home"
-                           asp-action="Index"
-                           class="btn btn-link text-white-50">
-                            Home
-                        </a>
-
-                        <a asp-controller="Jobs"
-                           asp-action="Index"
-                           class="btn btn-link text-white-50">
-                            Find Jobs
-                        </a>
-
+                        <h5 class="text-white mb-4">CareerHub</h5>
+                        <p>Tìm việc làm phù hợp và xây dựng tương lai sự nghiệp của bạn.</p>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-link text-white-50">Trang chủ</a>
+                        <a asp-controller="Jobs" asp-action="Index" class="btn btn-link text-white-50">Tìm việc làm</a>
+                        <a asp-controller="Home" asp-action="FilterByCategory" class="btn btn-link text-white-50">Việc theo ngành</a>
                     </div>
 
                     <!-- Quick Links -->
                     <div class="col-lg-3 col-md-6">
-
-                        <h5 class="text-white mb-4">
-                            Quick Links
-                        </h5>
-
-                        <a asp-controller="Jobs"
-                           asp-action="Index"
-                           class="btn btn-link text-white-50">
-                            Job Listings
-                        </a>
-
-                        <a asp-controller="Home"
-                           asp-action="Index"
-                           asp-fragment="category"
-                           class="btn btn-link text-white-50">
-                            Job Categories
-                        </a>
-
-                        <a asp-controller="Home"
-                           asp-action="Index"
-                           asp-fragment="about"
-                           class="btn btn-link text-white-50">
-                            About Us
-                        </a>
-
+                        <h5 class="text-white mb-4">Liên kết nhanh</h5>
+                        <a asp-controller="Jobs" asp-action="Index" class="btn btn-link text-white-50">Danh sách việc làm</a>
+                        <a asp-controller="Home" asp-action="FilterByCategory" class="btn btn-link text-white-50">Việc theo ngành</a>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-link text-white-50">Đăng nhập</a>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-link text-white-50">Đăng ký</a>
                     </div>
 
                     <!-- Contact -->
                     <div class="col-lg-3 col-md-6">
-
-                        <h5 class="text-white mb-4">
-                            Contact
-                        </h5>
-
-                        <p>
-                            Connect with CareerHub
-                            for career opportunities.
-                        </p>
+                        <h5 class="text-white mb-4">Liên hệ</h5>
+                        <p>Kết nối với CareerHub để tìm kiếm cơ hội việc làm tốt nhất.</p>
 
                         <div class="d-flex pt-2">
 
