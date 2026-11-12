@@ -84,11 +84,13 @@ document.addEventListener("DOMContentLoaded", function () {
             "flex-shrink-0 img-fluid border rounded"
         );
 
-        const logo = job.logo
-            ? String(job.logo).split(/[\\/]/).pop()
-            : "com-logo-1.jpg";
+        const logoPath = String(job.logo || "")
+            .replaceAll("\\", "/")
+            .trim();
 
-        img.src = "/Template/img/" + encodeURIComponent(logo);
+        img.src = logoPath
+            ? "/" + logoPath.replace(/^\/+/, "")
+            : "/Template/img/com-logo-1.jpg";
         img.alt = "Company logo";
         img.style.width = "80px";
         img.style.height = "80px";
